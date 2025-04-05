@@ -1,18 +1,11 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-  Linking,
-} from "react-native";
+import {View,Text,TouchableOpacity,StyleSheet,Platform,Linking} from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Dropdown from "../../components/Dropdown";
-// import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import CustomInput from "../../components/CustomInput";
 
 const ContactedNumber = () => {
