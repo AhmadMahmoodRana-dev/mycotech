@@ -8,12 +8,11 @@ import {
 import React, { useState } from "react";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
-import RecentJobCard from "../../components/RecentJobCard";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import BackHeader from "../../components/BackHeader";
+import HistoryJobCard from "../../components/HistoryJobCard";
 
-const Complaint = () => {
+const CustomerComplaintsHistory = () => {
   const navigate = useRouter();
   const filters = [
     "All",
@@ -28,8 +27,7 @@ const Complaint = () => {
   ];
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [selectedPriority, setSelectedPriority] = useState("All");
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  
 
   const recentJobs = [
     {
@@ -41,7 +39,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Completed",
       region: "North Region",
-      priority: "High",
+    //   priority: "High",
     },
     {
       id: "2",
@@ -52,7 +50,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "In Progress",
       region: "South Region",
-      priority: "Medium",
+    //   priority: "Medium",
     },
     {
       id: "3",
@@ -63,7 +61,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Pending",
       region: "East Region",
-      priority: "Medium",
+    //   priority: "Medium",
     },
     {
       id: "4",
@@ -74,7 +72,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Part Waiting",
       region: "West Region",
-      priority: "High",
+    //   priority: "High",
     },
     {
       id: "5",
@@ -85,7 +83,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Under Repair",
       region: "Central Region",
-      priority: "Low",
+    //   priority: "Low",
     },
     {
       id: "6",
@@ -96,7 +94,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Under Repair",
       region: "Central Region",
-      priority: "High",
+    //   priority: "High",
     },
     {
       id: "7",
@@ -107,7 +105,7 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Part Waiting",
       region: "Central Region",
-      priority: "Low",
+    //   priority: "Low",
     },
     {
       id: "8",
@@ -118,15 +116,12 @@ const Complaint = () => {
       productCode: "CX-40U560",
       status: "Completed",
       region: "Central Region",
-      priority: "Medium",
+    //   priority: "Medium",
     },
   ];
 
   const filteredJobs = recentJobs
     .filter((job) => selectedFilter === "All" || job.status === selectedFilter)
-    .filter(
-      (job) => selectedPriority === "All" || job.priority === selectedPriority
-    )
     .sort((a, b) => {
       if (sortOrder === "asc") {
         return a.region.localeCompare(b.region);
@@ -136,7 +131,7 @@ const Complaint = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <BackHeader name="All Complaints" gap={80} />
+      <BackHeader name="Customer History" gap={60} />
       {/* Status Filter Section */}
       <View style={styles.filterContainer}>
         <FlatList
@@ -165,43 +160,6 @@ const Complaint = () => {
           alignItems: "center",
         }}
       >
-        <View style={styles.dropdownContainer}>
-          <TouchableOpacity
-            style={styles.dropdownButton}
-            onPress={() => setIsDropdownVisible((prev) => !prev)}
-          >
-            <Text style={styles.dropdownButtonText}>{selectedPriority}</Text>
-            <Ionicons
-              name="chevron-down"
-              size={18}
-              color="white"
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-
-          {isDropdownVisible && (
-            <View style={styles.dropdownMenu}>
-              <FlatList
-                data={["All", "High", "Medium", "Low"].filter(
-                  (item) => item !== selectedPriority
-                )} // 🔹 Hide selected value
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setSelectedPriority(item);
-                      setIsDropdownVisible(false);
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>{item}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          )}
-        </View>
-
         <TouchableOpacity
           style={styles.sortButton}
           onPress={() =>
@@ -218,7 +176,7 @@ const Complaint = () => {
         <FlatList
           data={filteredJobs}
           renderItem={({ item }) => (
-            <RecentJobCard item={item} router={navigate} />
+            <HistoryJobCard item={item} router={navigate}  />
           )}
           keyExtractor={(item) => item.id}
           scrollEnabled={true}
@@ -228,7 +186,7 @@ const Complaint = () => {
   );
 };
 
-export default Complaint;
+export default CustomerComplaintsHistory;
 
 const styles = StyleSheet.create({
   container: {

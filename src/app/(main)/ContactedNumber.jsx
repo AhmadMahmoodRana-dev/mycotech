@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import Dropdown from "../../components/Dropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import CustomInput from "../../components/CustomInput";
+import BackHeader from "../../components/BackHeader";
 
 const ContactedNumber = () => {
   const params = useLocalSearchParams();
@@ -56,22 +57,20 @@ const ContactedNumber = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={COLOR_SCHEME.text} />
-        <Text style={styles.header}>Contacted Number</Text>
-      </TouchableOpacity>
-      <View
+      <BackHeader name={"Contacted Number"} gap={60}/>
+      <TouchableOpacity
+        onPress={() => router.push("CustomerComplaintsHistory")}
         style={{
           paddingVertical: 12,
           paddingHorizontal: 4,
           alignItems: "flex-end",
         }}
       >
-        <Text style={{ color: "white", fontSize: 14, fontStyle: "italic" }}>
+        <Text style={{ color: "white", fontSize: 14, fontStyle: "italic"}}>
           <Text>History </Text>{" "}
           <FontAwesome name="history" size={14} color={"white"} />
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/* Complaint Details Card */}
       <View style={styles.card}>

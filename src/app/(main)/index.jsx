@@ -60,7 +60,7 @@ export default function Index() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Good Morning,</Text>
-            <Text style={styles.userName}>Ahmad Mahmood Rana</Text>
+            <Text style={styles.userName}>Ahmad Mahmood</Text>
           </View>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.notificationBadge}>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     color: COLOR_SCHEME.text,
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
   },
   headerIcons: {
