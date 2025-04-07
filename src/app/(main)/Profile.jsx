@@ -83,7 +83,7 @@ const Profile = () => {
           )}
         </TouchableOpacity>
 
-        <Text style={styles.name}>{profileData.name}</Text>
+        <Text style={styles.name}>{profileData?.name}</Text>
         <Text style={styles.title}>{technicianData.title}</Text>
 
         <View style={styles.statsContainer}>
@@ -111,7 +111,7 @@ const Profile = () => {
               size={20}
               color={COLOR_SCHEME.accent}
             />
-            <Text style={styles.infoText}>{profileData.email}</Text>
+            <Text style={styles.infoText}>{profileData?.email}</Text>
           </View>
           <View style={styles.infoItem}>
             <MaterialCommunityIcons
@@ -119,7 +119,7 @@ const Profile = () => {
               size={20}
               color={COLOR_SCHEME.accent}
             />
-            <Text style={styles.infoText}>{profileData.phone}</Text>
+            <Text style={styles.infoText}>{profileData?.phone}</Text>
           </View>
         </View>
 
