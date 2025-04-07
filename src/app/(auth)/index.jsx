@@ -4,11 +4,33 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle"; // Update import path
+import { useAuthStore } from "../../store/auth.store";
 
 const index = () => {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    passwordVisible: false,
+  });
+
+  const {login} = useAuthStore()
+
+  // Function to handle input change
+  const handleInputChange = (name, value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = () => {
+    try {
+      login(formData)
+      console.log("Login successful"); 
+    } catch (error) {
+      console.error("Login error:", error); 
+    }
+  };
 
   return (
     <SafeAreaView style={Styles.container}>
@@ -25,44 +47,49 @@ const index = () => {
         <View style={Styles.form}>
           {/* Username Input */}
           <View style={Styles.inputContainer}>
-            <Ionicons 
-              name="person-outline" 
-              size={24} 
-              color={COLOR_SCHEME.accent} 
-              style={Styles.icon} 
+            <Ionicons
+              name="person-outline"
+              size={24}
+              color={COLOR_SCHEME.accent}
+              style={Styles.icon}
             />
             <TextInput
               style={Styles.input}
-              placeholder="Username"
+              placeholder="email"
               placeholderTextColor={COLOR_SCHEME.grayText}
-              value={username}
-              onChangeText={setUsername}
+              value={formData.email}
+              onChangeText={(text) => handleInputChange("email", text)}
               autoCapitalize="none"
             />
           </View>
 
           {/* Password Input */}
           <View style={Styles.inputContainer}>
-            <Ionicons 
-              name="lock-closed-outline" 
-              size={24} 
-              color={COLOR_SCHEME.accent} 
-              style={Styles.icon} 
+            <Ionicons
+              name="lock-closed-outline"
+              size={24}
+              color={COLOR_SCHEME.accent}
+              style={Styles.icon}
             />
             <TextInput
               style={Styles.input}
               placeholder="Password"
               placeholderTextColor={COLOR_SCHEME.grayText}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!passwordVisible}
+              value={formData.password}
+              onChangeText={(text) => handleInputChange("password", text)}
+              secureTextEntry={!formData.passwordVisible}
             />
             <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
+              onPress={() =>
+                setFormData((prevData) => ({
+                  ...prevData,
+                  passwordVisible: !prevData.passwordVisible,
+                }))
+              }
               style={Styles.eyeIcon}
             >
               <Feather
-                name={passwordVisible ? "eye-off" : "eye"}
+                name={formData.passwordVisible ? "eye-off" : "eye"}
                 size={24}
                 color={COLOR_SCHEME.accent}
               />
@@ -73,7 +100,7 @@ const index = () => {
             <Text style={Styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity onPress={() => handleLogin()}
             style={Styles.loginButton}
             activeOpacity={0.8}
           >
@@ -91,7 +118,7 @@ const Styles = StyleSheet.create({
     backgroundColor: COLOR_SCHEME.background,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 50,
     paddingBottom: 30,
   },
@@ -103,7 +130,7 @@ const Styles = StyleSheet.create({
   logoText: {
     color: COLOR_SCHEME.text,
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 15,
     letterSpacing: 1.2,
   },
@@ -126,8 +153,8 @@ const Styles = StyleSheet.create({
     elevation: 20,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLOR_SCHEME.secondary,
     borderRadius: 12,
     marginBottom: 20,
@@ -141,26 +168,26 @@ const Styles = StyleSheet.create({
     flex: 1,
     color: COLOR_SCHEME.text,
     fontSize: 16,
-    height: '100%',
+    height: "100%",
   },
   eyeIcon: {
     marginLeft: 10,
   },
   forgotPassword: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginTop: 10,
   },
   forgotPasswordText: {
     color: COLOR_SCHEME.accent,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   loginButton: {
     backgroundColor: COLOR_SCHEME.accent,
     borderRadius: 12,
     height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 30,
     shadowColor: COLOR_SCHEME.accent,
     shadowOffset: { width: 0, height: 4 },
@@ -171,7 +198,7 @@ const Styles = StyleSheet.create({
   loginButtonText: {
     color: COLOR_SCHEME.primary,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 1,
   },
 });

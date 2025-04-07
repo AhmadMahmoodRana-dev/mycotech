@@ -1,14 +1,21 @@
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "react-native";
 import { useEffect } from "react";
+import { useAuthStore } from "../store/auth.store";
 
 const RootNavigation = () => {
   const router = useRouter();
-  const isLogin = true;
+  const { token } = useAuthStore();
+  console.log(token);
 
   useEffect(() => {
-    router.replace(isLogin ? "/(main)" : "/(auth)");
-  }, [isLogin]);
+    const checkLogin = async () => {
+      const storedToken = await token; // if token is Promise (because of AsyncStorage)
+      router.replace(storedToken ? "/(main)" : "/(auth)");
+    };
+
+    checkLogin();
+  }, [token]);
 
   return (
     <>

@@ -1,28 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import COLOR_SCHEME from '../../colors/MainStyle';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import avatar from '../../assets/images/avatar.jpg';
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import COLOR_SCHEME from "../../colors/MainStyle";
+import { SafeAreaView } from "react-native-safe-area-context";
+import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import avatar from "../../assets/images/avatar.jpg";
+import { useAuthStore } from "../../store/auth.store";
 const Profile = () => {
   const [profileImage, setProfileImage] = useState(null);
-
+  const { logout, profile,profileData } = useAuthStore();
+  console.log(profileData);
   const technicianData = {
     name: "Ahmad Mahmood Rana",
     title: "Senior HVAC Technician",
     email: "john.carter@email.com",
     phone: "+1 (234) 567-890",
-    skills: ["HVAC Installation", "System Repair", "Maintenance", "Troubleshooting"],
+    skills: [
+      "HVAC Installation",
+      "System Repair",
+      "Maintenance",
+      "Troubleshooting",
+    ],
     completedJobs: 245,
     rating: 4.9,
     experience: 5,
   };
+
   useEffect(() => {
     const loadProfileImage = async () => {
       try {
-        const savedImage = await AsyncStorage.getItem('profileImage');
+        const savedImage = await AsyncStorage.getItem("profileImage");
         if (savedImage) {
           setProfileImage(savedImage);
         }
@@ -34,11 +42,15 @@ const Profile = () => {
     loadProfileImage();
   }, []);
 
+  useEffect(() => {
+    profile();
+  }, []);
+
   // Function to pick an image from the gallery
   const handleImagePicker = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Permission to access gallery is required!');
+    if (status !== "granted") {
+      alert("Permission to access gallery is required!");
       return;
     }
 
@@ -52,7 +64,7 @@ const Profile = () => {
     if (!result.canceled) {
       const selectedImageUri = result.assets[0].uri;
       setProfileImage(selectedImageUri);
-      await AsyncStorage.setItem('profileImage', selectedImageUri);
+      await AsyncStorage.setItem("profileImage", selectedImageUri);
     }
   };
 
@@ -60,7 +72,10 @@ const Profile = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         {/* Avatar with Image Picker */}
-        <TouchableOpacity style={styles.avatarContainer} onPress={handleImagePicker}>
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          onPress={handleImagePicker}
+        >
           {profileImage ? (
             <Image source={{ uri: profileImage }} style={styles.avatarImage} />
           ) : (
@@ -68,7 +83,7 @@ const Profile = () => {
           )}
         </TouchableOpacity>
 
-        <Text style={styles.name}>{technicianData.name}</Text>
+        <Text style={styles.name}>{profileData.name}</Text>
         <Text style={styles.title}>{technicianData.title}</Text>
 
         <View style={styles.statsContainer}>
@@ -91,12 +106,20 @@ const Profile = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contact Information</Text>
           <View style={styles.infoItem}>
-            <MaterialCommunityIcons name="email" size={20} color={COLOR_SCHEME.accent} />
-            <Text style={styles.infoText}>{technicianData.email}</Text>
+            <MaterialCommunityIcons
+              name="email"
+              size={20}
+              color={COLOR_SCHEME.accent}
+            />
+            <Text style={styles.infoText}>{profileData.email}</Text>
           </View>
           <View style={styles.infoItem}>
-            <MaterialCommunityIcons name="phone" size={20} color={COLOR_SCHEME.accent} />
-            <Text style={styles.infoText}>{technicianData.phone}</Text>
+            <MaterialCommunityIcons
+              name="phone"
+              size={20}
+              color={COLOR_SCHEME.accent}
+            />
+            <Text style={styles.infoText}>{profileData.phone}</Text>
           </View>
         </View>
 
@@ -111,7 +134,7 @@ const Profile = () => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>
@@ -127,7 +150,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: COLOR_SCHEME.primary,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
   },
@@ -136,24 +159,24 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     backgroundColor: COLOR_SCHEME.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 15,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   avatarImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 50,
   },
   avatarText: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLOR_SCHEME.text,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLOR_SCHEME.text,
     marginBottom: 5,
   },
@@ -163,17 +186,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginTop: 15,
   },
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statValue: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLOR_SCHEME.text,
   },
   statLabel: {
@@ -192,13 +215,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLOR_SCHEME.text,
     marginBottom: 15,
   },
   infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
   infoText: {
@@ -207,8 +230,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   skillTag: {
     backgroundColor: COLOR_SCHEME.accent,
@@ -225,13 +248,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_SCHEME.accent,
     borderRadius: 12,
     padding: 15,
-    alignItems: 'center',
-    marginTop: 'auto',
+    alignItems: "center",
+    marginTop: "auto",
   },
   logoutText: {
     color: COLOR_SCHEME.text,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
