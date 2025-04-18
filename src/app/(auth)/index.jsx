@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle"; // Update import path
-import { useAuthStore } from "../../store/auth.store";
 
 const index = () => {
   const [formData, setFormData] = useState({
@@ -12,8 +11,6 @@ const index = () => {
     password: "",
     passwordVisible: false,
   });
-
-  const {login} = useAuthStore()
 
   // Function to handle input change
   const handleInputChange = (name, value) => {
@@ -25,8 +22,7 @@ const index = () => {
 
   const handleLogin = () => {
     try {
-      login(formData)
-      console.log("Login successful"); 
+      console.log("Login successful",formData); 
     } catch (error) {
       console.error("Login error:", error); 
     }

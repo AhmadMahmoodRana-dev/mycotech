@@ -6,11 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import avatar from "../../assets/images/avatar.jpg";
-import { useAuthStore } from "../../store/auth.store";
 const Profile = () => {
   const [profileImage, setProfileImage] = useState(null);
-  const { logout, profile,profileData } = useAuthStore();
-  console.log(profileData);
   const technicianData = {
     name: "Ahmad Mahmood Rana",
     title: "Senior HVAC Technician",
@@ -42,9 +39,7 @@ const Profile = () => {
     loadProfileImage();
   }, []);
 
-  useEffect(() => {
-    profile();
-  }, []);
+
 
   // Function to pick an image from the gallery
   const handleImagePicker = async () => {
@@ -83,7 +78,7 @@ const Profile = () => {
           )}
         </TouchableOpacity>
 
-        <Text style={styles.name}>{profileData?.name}</Text>
+        <Text style={styles.name}>{technicianData?.name}</Text>
         <Text style={styles.title}>{technicianData.title}</Text>
 
         <View style={styles.statsContainer}>
@@ -111,7 +106,7 @@ const Profile = () => {
               size={20}
               color={COLOR_SCHEME.accent}
             />
-            <Text style={styles.infoText}>{profileData?.email}</Text>
+            <Text style={styles.infoText}>{technicianData?.email}</Text>
           </View>
           <View style={styles.infoItem}>
             <MaterialCommunityIcons
@@ -119,7 +114,7 @@ const Profile = () => {
               size={20}
               color={COLOR_SCHEME.accent}
             />
-            <Text style={styles.infoText}>{profileData?.phone}</Text>
+            <Text style={styles.infoText}>{technicianData?.phone}</Text>
           </View>
         </View>
 
@@ -134,7 +129,7 @@ const Profile = () => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
+        <TouchableOpacity style={styles.logoutButton}>
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>

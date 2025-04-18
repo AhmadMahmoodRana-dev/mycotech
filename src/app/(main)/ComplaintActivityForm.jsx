@@ -8,12 +8,10 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import CustomInput from "../../components/CustomInput";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import {useCameraPermissions } from "expo-camera";
 import QrcodeScannerModel from "../../components/Models/QrcodeScannerModel";
 import BackHeader from "../../components/BackHeader";
 
@@ -35,7 +33,6 @@ const ComplaintActivityForm = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
-  // const [scanningActive, setScanningActive] = useState(true);
   const qrLock = useRef(false);
 
   const handleChange = (key, value) => {

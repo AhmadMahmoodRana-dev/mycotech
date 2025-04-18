@@ -59,14 +59,7 @@ const HistoryJobCard = ({ item, router }) => {
             <Text style={{ fontWeight: "100" }}>{item.visitDate}</Text>
           </Text>
         </View>
-        <View
-          style={[
-            styles.statusBadge,
-            { backgroundColor: getPriorityColor(item.priority) },
-          ]}
-        >
-          <Text style={{ color: "white", fontSize: 10 }}>{item.priority}</Text>
-        </View>
+       
       </View>
       <View style={styles.CardMain}>
         <Text style={styles.visitDate}>

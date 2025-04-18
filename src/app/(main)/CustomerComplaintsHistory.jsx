@@ -39,7 +39,7 @@ const CustomerComplaintsHistory = () => {
       productCode: "CX-40U560",
       status: "Completed",
       region: "North Region",
-    //   priority: "High",
+      // priority: "High",
     },
     {
       id: "2",
