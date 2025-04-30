@@ -1,19 +1,11 @@
 import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Platform,
-  Alert,
-} from "react-native";
-import COLOR_SCHEME from "../../colors/MainStyle";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../../components/CustomInput";
-import {useCameraPermissions } from "expo-camera";
+import { useCameraPermissions } from "expo-camera";
 import QrcodeScannerModel from "../../components/Models/QrcodeScannerModel";
 import BackHeader from "../../components/BackHeader";
+import { styles } from "../../styles/ComplaintActivityForm";
 
 const ComplaintActivityForm = () => {
   const [formData, setFormData] = useState({
@@ -28,6 +20,7 @@ const ComplaintActivityForm = () => {
     visitDate: "2025-04-03",
     model: "",
     serialNo: "",
+    dateOfManufacture: "",
   });
 
   const [showScanner, setShowScanner] = useState(false);
@@ -41,31 +34,44 @@ const ComplaintActivityForm = () => {
 
   const handleBarcodeScanned = ({ data }) => {
     console.log("Scanned Data:", data);
+
     if (!qrLock.current && data) {
       qrLock.current = true;
 
       try {
-        const [modelPart, serialPart] = data.split("|");
-        const model = modelPart.split(":")[1]?.trim();
-        const serialNo = serialPart.split(":")[1]?.trim();
+        // Split by '%' and trim
+        const parts = data.split("%").map((part) => part.trim());
 
-        setFormData((prev) => ({
-          ...prev,
-          model: model || "",
-          serialNo: serialNo || "",
-        }));
+        if (parts.length >= 2) {
+          const serialNo = parts[0]; // First part is Serial Number
+          const modelRaw = parts[1]; // e.g., "ES-18EM01WS SA+/I"
+          const model = modelRaw.split(" ")[0]; // Get only the part before space (e.g., ES-18EM01WS)
+          const dateOfManufacture = parts[2]; // Assuming you want to store this too
 
-        Alert.alert("Scan Successful", "Data has been auto-filled!", [
-          { text: "OK", onPress: () => setShowScanner(false) },
-        ]);
+          setFormData((prev) => ({
+            ...prev,
+            serialNo,
+            model,
+            dateOfManufacture,
+          }));
+
+          // Auto-close scanner after success
+          Alert.alert("Scan Successful", "Fields have been auto-filled!", [
+            { text: "OK", onPress: () => setShowScanner(false) },
+          ]);
+        } else {
+          throw new Error("Unexpected format");
+        }
       } catch (error) {
         Alert.alert("Invalid Format", "Scanned data format is incorrect");
-      } finally {
-        setTimeout(() => {
-          qrLock.current = false;
-        }, 500);
+        qrLock.current = false; // Allow another scan in case of failure
       }
     }
+
+    // Prevent re-scanning too quickly
+    setTimeout(() => {
+      qrLock.current = false;
+    }, 1000);
   };
 
   const toggleCameraFacing = () => {
@@ -79,7 +85,7 @@ const ComplaintActivityForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-   <BackHeader name={"Complaint Activity"} gap={60} />
+      <BackHeader name={"Complaint Activity"} gap={60} />
       {/* Complaint Details Card */}
       <View style={styles.card}>
         <View style={styles.complaintHeader}>
@@ -147,6 +153,12 @@ const ComplaintActivityForm = () => {
             value={formData.serialNo}
             onChangeText={(value) => handleChange("serialNo", value)}
           />
+          <CustomInput
+            icon={"calendar"}
+            placeholder="Manufacture Date"
+            value={formData.dateOfManufacture}
+            onChangeText={(value) => handleChange("dateOfManufacture", value)}
+          />
 
           <TouchableOpacity
             style={styles.scanButton}
@@ -158,151 +170,17 @@ const ComplaintActivityForm = () => {
 
         {/* Scanner Modal */}
         <QrcodeScannerModel
-        requestPermission={requestPermission}
+          requestPermission={requestPermission}
           facing={facing}
           handleBarcodeScanned={handleBarcodeScanned}
           permission={permission}
           setShowScanner={setShowScanner}
           showScanner={showScanner}
           toggleCameraFacing={toggleCameraFacing}
-
         />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-// Add these new styles to your existing StyleSheet
-const styles = StyleSheet.create({
-  scanButton: {
-    backgroundColor: COLOR_SCHEME.accent,
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  scanButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLOR_SCHEME.background,
-    padding: 15,
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    gap: 10,
-  },
-  header: {
-    color: COLOR_SCHEME.text,
-    fontSize: 26,
-    fontWeight: "800",
-  },
-  card: {
-    backgroundColor: COLOR_SCHEME.secondary,
-    borderRadius: 12,
-    padding: 18,
-    marginBottom: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-      },
-      android: { elevation: 3 },
-    }),
-  },
-  complaintHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  complaintNumber: {
-    color: COLOR_SCHEME.text,
-    fontWeight: "600",
-  },
-  visitDate: {
-    color: COLOR_SCHEME.grayText,
-  },
-  productName: {
-    color: COLOR_SCHEME.accent,
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  formCard: {
-    backgroundColor: COLOR_SCHEME.secondary,
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 15,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-      },
-      android: { elevation: 3 },
-    }),
-  },
-  inputGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-    backgroundColor: COLOR_SCHEME.background,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    color: COLOR_SCHEME.text,
-    fontSize: 16,
-    paddingVertical: 12,
-  },
-  addressInput: {
-    height: 80,
-    textAlignVertical: "center",
-  },
-  rowBox: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: COLOR_SCHEME.secondary,
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 8,
-  },
-  addButton: {
-    backgroundColor: COLOR_SCHEME.accent,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  iconRow: {
-    flexDirection: "row",
-  },
-  iconButton: {
-    marginLeft: 10,
-  },
-  label: {
-    fontSize: 16,
-    color: COLOR_SCHEME.text,
-    fontWeight: "600",
-    marginBottom: 5,
-    paddingHorizontal: 10,
-  },
-});
-
 export default ComplaintActivityForm;
-

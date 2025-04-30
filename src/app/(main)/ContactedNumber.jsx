@@ -130,8 +130,8 @@ const ContactedNumber = () => {
       {/* Editable Contact Form */}
       <View style={styles.formCard}>
         <CustomInput icon="person" placeholder="Name" value="Ahmad Mahmood Rana" editable={false} />
-        <CustomInput iconFunction={handleCall} icon="call" placeholder="Phone No" value={phone} onChangeText={setPhone} />
-        <CustomInput icon="phone-portrait" placeholder="Landline No" value={landline} onChangeText={setLandline} />
+        <CustomInput iconFunction={handleCall} icon="call" placeholder="Phone No" value={phone} editable={false} />
+        <CustomInput icon="phone-portrait" placeholder="Landline No" value={landline} editable={false} />
         
         <TouchableOpacity style={styles.inputGroup} onPress={() => setShowStatusDropdown(true)}>
           <Ionicons name="information-circle" size={18} color={COLOR_SCHEME.grayText} style={styles.inputIcon} />
@@ -139,7 +139,7 @@ const ContactedNumber = () => {
           <Ionicons name="chevron-down" size={16} color={COLOR_SCHEME.grayText} />
         </TouchableOpacity>
 
-        <CustomInput icon="location" placeholder="Address" value={address} onChangeText={setAddress} />
+        <CustomInput icon="location" placeholder="Address" value={address} editable={false} />
 
         <TouchableOpacity style={styles.inputGroup} onPress={() => setShowDatePicker(true)}>
           <Ionicons name="calendar" size={18} color={COLOR_SCHEME.grayText} style={styles.inputIcon} />
