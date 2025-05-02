@@ -160,12 +160,23 @@ const ComplaintActivityForm = () => {
             onChangeText={(value) => handleChange("dateOfManufacture", value)}
           />
 
-          <TouchableOpacity
-            style={styles.scanButton}
-            onPress={() => setShowScanner(true)}
-          >
-            <Text style={styles.scanButtonText}>Scan QR/Bar Code</Text>
-          </TouchableOpacity>
+          {formData.model === "" ||
+          formData.serialNo === "" ||
+          formData.dateOfManufacture === "" ? (
+            <TouchableOpacity
+              style={styles.scanButton}
+              onPress={() => setShowScanner(true)}
+            >
+              <Text style={styles.scanButtonText}>Scan QR/Bar Code</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.scanButton}
+              onPress={() => setShowScanner(true)}
+            >
+              <Text style={styles.scanButtonText}>Next</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Scanner Modal */}
