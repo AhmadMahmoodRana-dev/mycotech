@@ -6,8 +6,10 @@ import { useCameraPermissions } from "expo-camera";
 import QrcodeScannerModel from "../../components/Models/QrcodeScannerModel";
 import BackHeader from "../../components/BackHeader";
 import { styles } from "../../styles/ComplaintActivityForm";
+import { useRouter } from "expo-router";
 
 const ComplaintActivityForm = () => {
+  const navigate = useRouter();
   const [formData, setFormData] = useState({
     name: "Ahmad Mahmood Khan",
     complaintNo: "2232100026",
@@ -172,7 +174,7 @@ const ComplaintActivityForm = () => {
           ) : (
             <TouchableOpacity
               style={styles.scanButton}
-              onPress={() => setShowScanner(true)}
+              onPress={() => navigate.push("FourButtonPages")}
             >
               <Text style={styles.scanButtonText}>Next</Text>
             </TouchableOpacity>

@@ -68,8 +68,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   scanFrame: {
-    width: 250,
-    height: 150,
+    width: 320,
+    height: 180,
     borderWidth: 2,
     borderColor: "rgba(255, 255, 255, 0.8)",
     backgroundColor: "transparent",

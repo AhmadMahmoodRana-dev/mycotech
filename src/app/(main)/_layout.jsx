@@ -11,6 +11,8 @@ export default function MainLayout() {
       <Stack.Screen name="CustomerComplaintHistoryDetail" />
       <Stack.Screen name="Profile" />
       <Stack.Screen name="Setting" />
+      <Stack.Screen name="FourButtonPages" />
+      <Stack.Screen name="StoreScreen" />
     </Stack>
   );
 }
