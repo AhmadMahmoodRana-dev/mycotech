@@ -17,7 +17,7 @@ const BUTTON_WIDTH = (width - CARD_MARGIN * 3) / 2;
 const quickActions = [
   { id: "1", icon: "work", title: "Store", route: "/StoreScreen" },
   { id: "2", icon: "summarize", title: "Visit Date", route: "" },
-  { id: "3", icon: "inventory", title: "Techni Finding" },
+  { id: "3", icon: "inventory", title: "Techni Finding",route:"TechnicialFIndings" },
   { id: "4", icon: "open-with", title: "Advance" },
 ];
 

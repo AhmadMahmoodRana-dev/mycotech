@@ -13,6 +13,7 @@ export default function MainLayout() {
       <Stack.Screen name="Setting" />
       <Stack.Screen name="FourButtonPages" />
       <Stack.Screen name="StoreScreen" />
+      <Stack.Screen name="TechnicialFIndings" />
     </Stack>
   );
 }
