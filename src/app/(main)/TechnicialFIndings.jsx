@@ -66,6 +66,7 @@ const TechnicialFIndings = () => {
     }
     console.log("Submitted Findings:", findings);
     setSubmitted(true);
+    setFindings([initialEntry]);
   };
 
   return (
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
   },
   label: { fontWeight: "500", marginBottom: 6, color: COLOR_SCHEME.text },
   input: {
-    backgroundColor: COLOR_SCHEME.primary,
+    backgroundColor: COLOR_SCHEME.background,
     padding: 14,
     borderRadius: 8,
     marginBottom: 12,

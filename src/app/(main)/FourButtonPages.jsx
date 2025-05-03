@@ -18,7 +18,7 @@ const quickActions = [
   { id: "1", icon: "work", title: "Store", route: "/StoreScreen" },
   { id: "2", icon: "summarize", title: "Visit Date", route: "Visits" },
   { id: "3", icon: "inventory", title: "Techni Finding",route:"TechnicialFIndings" },
-  { id: "4", icon: "open-with", title: "Advance" },
+  { id: "4", icon: "open-with", title: "Advance",route:"Advance" },
 ];
 
 const FourButtonPages = () => {

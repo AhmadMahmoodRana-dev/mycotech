@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Modal,
   FlatList,
+  TextInput,
 } from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -127,11 +128,12 @@ const Visits = () => {
         {visits.map((entry, index) => (
           <View key={index} style={styles.card}>
             <Text style={styles.label}>Name</Text>
-
-            <CustomInput
-              onChangeText={(text) => handleInputChange(index, "name", text)}
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Your Name"
+              placeholderTextColor={COLOR_SCHEME.grayText}
               value={entry.name}
-              placeholder={"Enter Your Name"}
+              onChangeText={(text) => handleInputChange(index, "name", text)}
             />
 
             <Text style={styles.label}>Status</Text>
@@ -262,10 +264,11 @@ const styles = StyleSheet.create({
     color: COLOR_SCHEME.text,
   },
   input: {
-    backgroundColor: COLOR_SCHEME.primary,
+    backgroundColor: COLOR_SCHEME.background,
     padding: 14,
     borderRadius: 8,
     marginBottom: 12,
+    color: COLOR_SCHEME.text,
   },
   addButton: {
     backgroundColor: COLOR_SCHEME.accent,

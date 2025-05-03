@@ -15,6 +15,7 @@ export default function MainLayout() {
       <Stack.Screen name="StoreScreen" />
       <Stack.Screen name="TechnicialFIndings" />
       <Stack.Screen name="Visits" />
+      <Stack.Screen name="Advance" />
     </Stack>
   );
 }

@@ -2,20 +2,22 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
   Alert,
+  TouchableOpacity,
+  Image,
+  TextInput,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
 
-const initialEntry = { partNo: "", partName: "", quantity: "", price: "" };
+const initialEntry = { amount: "", remarks: "", images: [] };
 
-const StoreScreen = () => {
+const Advance = () => {
   const [entries, setEntries] = useState([{ ...initialEntry }]);
 
   const handleInputChange = (index, field, value) => {
@@ -24,17 +26,12 @@ const StoreScreen = () => {
     setEntries(newEntries);
   };
 
-  const isEntryFilled = (entry) => {
-    return entry.partNo && entry.partName && entry.quantity && entry.price;
-  };
+  const isEntryFilled = (entry) => entry.amount && entry.remarks;
 
   const addNewEntry = () => {
     const lastEntry = entries[entries.length - 1];
     if (!isEntryFilled(lastEntry)) {
-      Alert.alert(
-        "Incomplete Entry",
-        "Please fill out all fields before adding a new entry."
-      );
+      Alert.alert("Incomplete Entry", "Fill out all fields before adding new.");
       return;
     }
     setEntries([...entries, { ...initialEntry }]);
@@ -42,39 +39,65 @@ const StoreScreen = () => {
 
   const removeEntry = (indexToRemove) => {
     if (entries.length === 1) {
-      Alert.alert("Minimum Entry", "At least one entry must remain.");
+      Alert.alert("Minimum Entry", "At least one entry is required.");
       return;
     }
-    const updatedEntries = entries.filter(
-      (_, index) => index !== indexToRemove
-    );
+    const updatedEntries = entries.filter((_, i) => i !== indexToRemove);
     setEntries(updatedEntries);
+  };
+
+  const pickImagesFromGallery = async (index) => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsMultipleSelection: true,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const newEntries = [...entries];
+      const selectedImages = result.assets || [];
+      newEntries[index].images = [
+        ...newEntries[index].images,
+        ...selectedImages,
+      ];
+      setEntries(newEntries);
+    }
+  };
+
+  const takePhotoFromCamera = async (index) => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Permission Denied", "Camera access is required.");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const newEntries = [...entries];
+      newEntries[index].images.push(result.assets[0]);
+      setEntries(newEntries);
+    }
   };
 
   const handleSubmit = () => {
     const allFilled = entries.every(isEntryFilled);
     if (!allFilled) {
-      Alert.alert(
-        "Incomplete Form",
-        "Please fill out all fields before submitting."
-      );
+      Alert.alert("Incomplete Form", "Fill out all fields before submitting.");
       return;
     }
-    const parsedEntries = entries.map((entry) => ({
-      ...entry,
-      quantity: Number(entry.quantity),
-      price: Number(entry.price),
-    }));
-    console.log("Submitted Entries:", parsedEntries);
-    // ✅ Clear the form
+
+    console.log("Submitted Entries:", entries);
     setEntries([{ ...initialEntry }]);
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
-        <BackHeader name={"Store"} gap={120} />
-        
+        <BackHeader name={"Advance"} gap={120} />
 
         {entries.map((entry, index) => (
           <View key={index} style={styles.card}>
@@ -85,51 +108,64 @@ const StoreScreen = () => {
               <Entypo name="cross" style={styles.removeButtonText} />
             </TouchableOpacity>
 
-            <Text style={styles.label}>Part No.</Text>
+            <Text style={styles.label}>Amount</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter Part No."
+              placeholder="Enter Amount"
               placeholderTextColor={COLOR_SCHEME.grayText}
-              value={entry.partNo}
-              onChangeText={(value) =>
-                handleInputChange(index, "partNo", value)
-              }
-            />
-
-            <Text style={styles.label}>Part Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Part Name"
-              placeholderTextColor={COLOR_SCHEME.grayText}
-              value={entry.partName}
-              onChangeText={(value) =>
-                handleInputChange(index, "partName", value)
-              }
-            />
-
-            <Text style={styles.label}>Quantity</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Quantity"
-              placeholderTextColor={COLOR_SCHEME.grayText}
+              value={entry.amount}
               keyboardType="numeric"
-              value={entry.quantity}
               onChangeText={(value) =>
-                handleInputChange(index, "quantity", value)
+                handleInputChange(index, "amount", value)
               }
             />
 
-            <Text style={styles.label}>Price</Text>
+            <Text style={styles.label}>Remarks</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter Price"
+              placeholder="Enter remarks"
               placeholderTextColor={COLOR_SCHEME.grayText}
-              keyboardType="numeric"
-              value={entry.price}
-              onChangeText={(value) => handleInputChange(index, "price", value)}
+              value={entry.remarks}
+              onChangeText={(value) =>
+                handleInputChange(index, "remarks", value)
+              }
             />
+
+            <Text style={styles.label}>Upload Warranty Document</Text>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <TouchableOpacity
+                onPress={() => pickImagesFromGallery(index)}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>Gallery</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => takePhotoFromCamera(index)}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>Camera</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView horizontal style={{ marginTop: 10 }}>
+              {entry.images.map((img, i) => (
+                <Image
+                  key={i}
+                  source={{ uri: img.uri }}
+                  style={{
+                    width: 80,
+                    height: 80,
+                    marginRight: 10,
+                    borderRadius: 8,
+                  }}
+                />
+              ))}
+            </ScrollView>
           </View>
         ))}
+
+        {/* Show "+ Add New" only if last entry is filled */}
         {isEntryFilled(entries[entries.length - 1]) && (
           <TouchableOpacity onPress={addNewEntry} style={styles.addButton}>
             <Text style={styles.addButtonText}>+ Add New</Text>
@@ -154,7 +190,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_SCHEME.accent,
     padding: 10,
     borderRadius: 10,
-    alignSelf: "flex-end",
+    alignSelf: "flex-start",
     marginVertical: 15,
   },
   addButtonText: {
@@ -190,7 +226,7 @@ const styles = StyleSheet.create({
     top: -8,
     right: -8,
     backgroundColor: "#f44336",
-    borderRadius: "100%",
+    borderRadius: 100,
     zIndex: 1,
     padding: 6,
   },
@@ -213,4 +249,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StoreScreen;
+export default Advance;
