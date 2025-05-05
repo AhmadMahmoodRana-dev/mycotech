@@ -4,6 +4,7 @@ import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
 import { Entypo } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const predefinedFindings = [
   {
@@ -24,13 +25,13 @@ const initialEntry = {
   correctiveAction: "",
 };
 
-const TechnicialFIndings = () => {
+const TechnicalFindings = () => {
   const [findings, setFindings] = useState([{ ...initialEntry }]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [activeField, setActiveField] = useState(null);
   const [dropdownIndex, setDropdownIndex] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-
+const router = useRouter()
   const isFilled = (entry) =>
     entry.actualFault && entry.relevantReason && entry.correctiveAction;
 
@@ -65,6 +66,7 @@ const TechnicialFIndings = () => {
       return;
     }
     console.log("Submitted Findings:", findings);
+    router.push("/StoreScreen")
     setSubmitted(true);
     setFindings([initialEntry]);
   };
@@ -268,4 +270,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TechnicialFIndings;
+export default TechnicalFindings;

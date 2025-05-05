@@ -1,27 +1,18 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Modal,
-  FlatList,
-  TextInput,
-} from "react-native";
+import {View,Text,TouchableOpacity,ScrollView,StyleSheet,Modal,FlatList,TextInput} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
 import { Entypo } from "@expo/vector-icons";
-import CustomInput from "../../components/CustomInput";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
+import { useRouter } from "expo-router";
 
 const predefinedStatus = ["Estimate", "In Progress", "Completed"];
 const predefinedRemarks = ["no power", "overheating", "not responding"];
 
 const initialEntry = {
-  name: "",
+  name: "Ahmad Mahmood",
   status: "",
   remarks: "",
   visitDate: null,
@@ -35,10 +26,9 @@ const Visits = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerMode, setDatePickerMode] = useState("date"); // "date" or "time"
   const [datePickerIndex, setDatePickerIndex] = useState(null);
-
+  const router = useRouter(); 
   const isFilled = (entry) =>
     entry.name.trim() && entry.status && entry.remarks && entry.visitDate;
-  
 
   const addVisit = () => {
     setVisits([...visits, { ...initialEntry }]);
@@ -73,15 +63,15 @@ const Visits = () => {
   const handleSubmit = () => {
     // Filter out incomplete entries
     const completedVisits = visits.filter(isFilled);
-
     if (completedVisits.length === 0) {
       alert("Please fill out at least one complete visit.");
       return;
     }
-
+    
     // Example action: print to console or send to backend
     console.log("Submitted Visits:", completedVisits);
     alert("Visits submitted successfully!");
+    router.push("/TechnicalFindings");
 
     // Optionally reset form
     setVisits([{ ...initialEntry }]);
@@ -133,6 +123,7 @@ const Visits = () => {
               placeholder="Enter Your Name"
               placeholderTextColor={COLOR_SCHEME.grayText}
               value={entry.name}
+              editable={false}
               onChangeText={(text) => handleInputChange(index, "name", text)}
             />
 

@@ -1,25 +1,16 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-  Image,
-  TextInput,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import {View,Text,ScrollView,StyleSheet,Alert,TouchableOpacity,TextInput} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
+import { useRouter } from "expo-router";
 
 const initialEntry = { amount: "", remarks: "", images: [] };
 
 const Advance = () => {
   const [entries, setEntries] = useState([{ ...initialEntry }]);
-
+  const router = useRouter();
   const handleInputChange = (index, field, value) => {
     const newEntries = [...entries];
     newEntries[index][field] = value;
@@ -46,50 +37,13 @@ const Advance = () => {
     setEntries(updatedEntries);
   };
 
-  const pickImagesFromGallery = async (index) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsMultipleSelection: true,
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const newEntries = [...entries];
-      const selectedImages = result.assets || [];
-      newEntries[index].images = [
-        ...newEntries[index].images,
-        ...selectedImages,
-      ];
-      setEntries(newEntries);
-    }
-  };
-
-  const takePhotoFromCamera = async (index) => {
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Permission Denied", "Camera access is required.");
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const newEntries = [...entries];
-      newEntries[index].images.push(result.assets[0]);
-      setEntries(newEntries);
-    }
-  };
-
   const handleSubmit = () => {
     const allFilled = entries.every(isEntryFilled);
     if (!allFilled) {
       Alert.alert("Incomplete Form", "Fill out all fields before submitting.");
       return;
     }
-
+    router.push("/(main)");
     console.log("Submitted Entries:", entries);
     setEntries([{ ...initialEntry }]);
   };
@@ -130,38 +84,6 @@ const Advance = () => {
                 handleInputChange(index, "remarks", value)
               }
             />
-
-            <Text style={styles.label}>Upload Warranty Document</Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <TouchableOpacity
-                onPress={() => pickImagesFromGallery(index)}
-                style={styles.addButton}
-              >
-                <Text style={styles.addButtonText}>Gallery</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => takePhotoFromCamera(index)}
-                style={styles.addButton}
-              >
-                <Text style={styles.addButtonText}>Camera</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView horizontal style={{ marginTop: 10 }}>
-              {entry.images.map((img, i) => (
-                <Image
-                  key={i}
-                  source={{ uri: img.uri }}
-                  style={{
-                    width: 80,
-                    height: 80,
-                    marginRight: 10,
-                    borderRadius: 8,
-                  }}
-                />
-              ))}
-            </ScrollView>
           </View>
         ))}
 

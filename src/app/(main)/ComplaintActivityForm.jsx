@@ -1,5 +1,12 @@
 import React, { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../../components/CustomInput";
 import { useCameraPermissions } from "expo-camera";
@@ -7,7 +14,8 @@ import QrcodeScannerModel from "../../components/Models/QrcodeScannerModel";
 import BackHeader from "../../components/BackHeader";
 import { styles } from "../../styles/ComplaintActivityForm";
 import { useRouter } from "expo-router";
-
+import { AntDesign } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 const ComplaintActivityForm = () => {
   const navigate = useRouter();
   const [formData, setFormData] = useState({
@@ -22,9 +30,10 @@ const ComplaintActivityForm = () => {
     visitDate: "2025-04-03",
     model: "",
     serialNo: "",
-    dateOfManufacture: "",
+    paymentType: "",
+    attachments: [],
   });
-
+  const [showDropdown, setShowDropdown] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
@@ -48,13 +57,11 @@ const ComplaintActivityForm = () => {
           const serialNo = parts[0]; // First part is Serial Number
           const modelRaw = parts[1]; // e.g., "ES-18EM01WS SA+/I"
           const model = modelRaw.split(" ")[0]; // Get only the part before space (e.g., ES-18EM01WS)
-          const dateOfManufacture = parts[2]; // Assuming you want to store this too
 
           setFormData((prev) => ({
             ...prev,
             serialNo,
             model,
-            dateOfManufacture,
           }));
 
           // Auto-close scanner after success
@@ -83,6 +90,43 @@ const ComplaintActivityForm = () => {
   if (!permission) {
     return <View />;
   }
+
+  // ################   IMAGE PICKER  ##################
+  const pickImagesFromGallery = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsMultipleSelection: true,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const selectedImages = result.assets || [];
+      setFormData((prev) => ({
+        ...prev,
+        attachments: [...prev.attachments, ...selectedImages],
+      }));
+    }
+  };
+
+  const takePhotoFromCamera = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Permission Denied", "Camera access is required.");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setFormData((prev) => ({
+        ...prev,
+        attachments: [...prev.attachments, result.assets[0]],
+      }));
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -142,39 +186,101 @@ const ComplaintActivityForm = () => {
           />
 
           {/* Add new fields */}
-          <CustomInput
-            icon={"cube"}
-            placeholder="Model"
-            value={formData.model}
-            onChangeText={(value) => handleChange("model", value)}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <View style={{ flex: 1, marginRight: 10 }}>
+              <CustomInput
+                icon="cube"
+                placeholder="Model"
+                value={formData.model}
+                onChangeText={(value) => handleChange("model", value)}
+              />
+            </View>
 
+            <TouchableOpacity
+              style={{ paddingBottom: 12 }}
+              onPress={() => setShowScanner(true)}
+            >
+              <AntDesign name="scan1" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
           <CustomInput
             icon={"barcode"}
             placeholder="Serial Number"
             value={formData.serialNo}
             onChangeText={(value) => handleChange("serialNo", value)}
           />
-          <CustomInput
-            icon={"calendar"}
-            placeholder="Manufacture Date"
-            value={formData.dateOfManufacture}
-            onChangeText={(value) => handleChange("dateOfManufacture", value)}
-          />
 
-          {formData.model === "" ||
-          formData.serialNo === "" ||
-          formData.dateOfManufacture === "" ? (
+          <TouchableOpacity
+            style={styles.dropdown}
+            onPress={() => setShowDropdown(!showDropdown)}
+          >
+            <Text style={styles.dropdownText}>
+              {formData.paymentType || "Select Payment Type"}
+            </Text>
+          </TouchableOpacity>
+          {showDropdown && (
+            <View style={styles.dropdownList}>
+              {["Warranty", "Cash", "Credit"].map((option) => (
+                <TouchableOpacity
+                  key={option}
+                  onPress={() => {
+                    handleChange("paymentType", option);
+                    setShowDropdown(false);
+                  }}
+                  style={styles.dropdownItem}
+                >
+                  <Text style={{ color: "#fff" }}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {formData.paymentType === "Warranty" && (
+            <View>
+              <Text style={styles.label}>Upload Warranty Document</Text>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <TouchableOpacity
+                  onPress={pickImagesFromGallery}
+                  style={styles.addButton}
+                >
+                  <Text style={styles.addButtonText}>Gallery</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={takePhotoFromCamera}
+                  style={styles.addButton}
+                >
+                  <Text style={styles.addButtonText}>Camera</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView horizontal style={{ marginTop: 10 }}>
+                {formData.attachments.map((img, i) => (
+                  <Image
+                    key={i}
+                    source={{ uri: img.uri }}
+                    style={{
+                      width: 80,
+                      height: 80,
+                      marginRight: 10,
+                      borderRadius: 8,
+                    }}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {formData.model === "" || formData.serialNo === "" || formData.paymentType==="" ? null : (
             <TouchableOpacity
               style={styles.scanButton}
-              onPress={() => setShowScanner(true)}
-            >
-              <Text style={styles.scanButtonText}>Scan QR/Bar Code</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.scanButton}
-              onPress={() => navigate.push("FourButtonPages")}
+              onPress={() => navigate.push("Visits")}
             >
               <Text style={styles.scanButtonText}>Next</Text>
             </TouchableOpacity>

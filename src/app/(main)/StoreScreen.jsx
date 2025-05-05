@@ -1,21 +1,30 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import {View,Text,TextInput,TouchableOpacity,ScrollView,StyleSheet,Alert} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
+import { useRouter } from "expo-router";
 
 const initialEntry = { partNo: "", partName: "", quantity: "", price: "" };
 
 const StoreScreen = () => {
+  const PARTS_LIST = [
+    { partNo: "PN001", partName: "Brake Pad", price: 120 },
+    { partNo: "PN002", partName: "Oil Filter", price: 75 },
+    { partNo: "PN003", partName: "Air Filter", price: 90 },
+  ];
+  const [dropdownOpenIndex, setDropdownOpenIndex] = useState(null);
+  const router = useRouter();
+  const handlePartNoSelect = (index, selectedPart) => {
+    const updatedEntries = [...entries];
+    updatedEntries[index].partNo = selectedPart.partNo;
+    updatedEntries[index].partName = selectedPart.partName;
+    updatedEntries[index].price = selectedPart.price.toString();
+    setEntries(updatedEntries);
+    setDropdownOpenIndex(null); // close dropdown
+  };
+
   const [entries, setEntries] = useState([{ ...initialEntry }]);
 
   const handleInputChange = (index, field, value) => {
@@ -65,6 +74,7 @@ const StoreScreen = () => {
       quantity: Number(entry.quantity),
       price: Number(entry.price),
     }));
+    router.push("Advance")
     console.log("Submitted Entries:", parsedEntries);
     // ✅ Clear the form
     setEntries([{ ...initialEntry }]);
@@ -74,7 +84,6 @@ const StoreScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
         <BackHeader name={"Store"} gap={120} />
-        
 
         {entries.map((entry, index) => (
           <View key={index} style={styles.card}>
@@ -86,15 +95,38 @@ const StoreScreen = () => {
             </TouchableOpacity>
 
             <Text style={styles.label}>Part No.</Text>
-            <TextInput
+            <TouchableOpacity
               style={styles.input}
-              placeholder="Enter Part No."
-              placeholderTextColor={COLOR_SCHEME.grayText}
-              value={entry.partNo}
-              onChangeText={(value) =>
-                handleInputChange(index, "partNo", value)
+              onPress={() =>
+                setDropdownOpenIndex(dropdownOpenIndex === index ? null : index)
               }
-            />
+            >
+              <Text
+                style={{
+                  color: entry.partNo
+                    ? COLOR_SCHEME.text
+                    : COLOR_SCHEME.grayText,
+                }}
+              >
+                {entry.partNo || "Select Part No."}
+              </Text>
+            </TouchableOpacity>
+
+            {dropdownOpenIndex === index && (
+              <View style={styles.dropdownOptions}>
+                {PARTS_LIST.map((part) => (
+                  <TouchableOpacity
+                    key={part.partNo}
+                    onPress={() => handlePartNoSelect(index, part)}
+                    style={styles.dropdownItem}
+                  >
+                    <Text style={{ color: COLOR_SCHEME.text }}>
+                      {part.partNo}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
 
             <Text style={styles.label}>Part Name</Text>
             <TextInput
@@ -102,6 +134,7 @@ const StoreScreen = () => {
               placeholder="Enter Part Name"
               placeholderTextColor={COLOR_SCHEME.grayText}
               value={entry.partName}
+              editable={false}
               onChangeText={(value) =>
                 handleInputChange(index, "partName", value)
               }
@@ -126,6 +159,7 @@ const StoreScreen = () => {
               placeholderTextColor={COLOR_SCHEME.grayText}
               keyboardType="numeric"
               value={entry.price}
+              editable={false}
               onChangeText={(value) => handleInputChange(index, "price", value)}
             />
           </View>
@@ -211,6 +245,21 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
+  dropdownOptions: {
+  backgroundColor: COLOR_SCHEME.background,
+  borderWidth: 1,
+  borderColor: COLOR_SCHEME.grayText,
+  borderRadius: 8,
+  marginBottom: 12,
+  maxHeight: 150,
+  overflow: "hidden",
+},
+dropdownItem: {
+  padding: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: COLOR_SCHEME.grayText,
+},
+
 });
 
 export default StoreScreen;
