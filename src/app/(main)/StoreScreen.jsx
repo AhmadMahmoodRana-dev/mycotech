@@ -1,10 +1,19 @@
 import React, { useState } from "react";
-import {View,Text,TextInput,TouchableOpacity,ScrollView,StyleSheet,Alert} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
 import { useRouter } from "expo-router";
+import InvoiceModel from "../../components/Models/InvoiceModel";
 
 const initialEntry = { partNo: "", partName: "", quantity: "", price: "" };
 
@@ -59,6 +68,7 @@ const StoreScreen = () => {
     );
     setEntries(updatedEntries);
   };
+  const [showInvoice, setShowInvoice] = useState(false);
 
   const handleSubmit = () => {
     const allFilled = entries.every(isEntryFilled);
@@ -74,12 +84,24 @@ const StoreScreen = () => {
       quantity: Number(entry.quantity),
       price: Number(entry.price),
     }));
-    router.push("Advance")
+    setShowInvoice(true); // Show modal on success
+    // router.push("Advance")
     console.log("Submitted Entries:", parsedEntries);
     // ✅ Clear the form
     setEntries([{ ...initialEntry }]);
   };
 
+  const technician = { name: "Ahmad Mahmood", id: "TECH1234" };
+  const customer = {
+    name: "Ali Raza",
+    address: "123 Street, Lahore",
+    phone: "0300-1234567",
+  };
+  const services = [
+    { name: "AC Repair", price: 2500 },
+    { name: "Gas Refill", price: 1500 },
+    { name: "General Maintenance", price: 1000 },
+  ];
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
@@ -174,6 +196,13 @@ const StoreScreen = () => {
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
+      <InvoiceModel
+        visible={showInvoice}
+        onClose={() => setShowInvoice(false)}
+        technician={technician}
+        customer={customer}
+        services={services}
+      />
     </SafeAreaView>
   );
 };
@@ -246,20 +275,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   dropdownOptions: {
-  backgroundColor: COLOR_SCHEME.background,
-  borderWidth: 1,
-  borderColor: COLOR_SCHEME.grayText,
-  borderRadius: 8,
-  marginBottom: 12,
-  maxHeight: 150,
-  overflow: "hidden",
-},
-dropdownItem: {
-  padding: 12,
-  borderBottomWidth: 1,
-  borderBottomColor: COLOR_SCHEME.grayText,
-},
-
+    backgroundColor: COLOR_SCHEME.background,
+    borderWidth: 1,
+    borderColor: COLOR_SCHEME.grayText,
+    borderRadius: 8,
+    marginBottom: 12,
+    maxHeight: 150,
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLOR_SCHEME.grayText,
+  },
 });
 
 export default StoreScreen;
