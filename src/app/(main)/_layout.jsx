@@ -15,6 +15,7 @@ export default function MainLayout() {
       <Stack.Screen name="TechnicalFindings" />
       <Stack.Screen name="Visits" />
       <Stack.Screen name="Advance" />
+      <Stack.Screen name="OTPVerificationScreen" />
     </Stack>
   );
 }

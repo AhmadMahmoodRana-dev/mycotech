@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
+import { useRouter } from 'expo-router';
+import DarkTheme from "../../colors/MainStyle"
 
 const InvoiceModel = ({ visible, onClose, customer, technician, services }) => {
   const totalAmount = services.reduce((sum, item) => sum + item.price, 0);
@@ -105,6 +107,7 @@ const InvoiceModel = ({ visible, onClose, customer, technician, services }) => {
     }
   };
 
+  const router = useRouter();
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalContainer}>
@@ -114,23 +117,23 @@ const InvoiceModel = ({ visible, onClose, customer, technician, services }) => {
 
             <View style={styles.section}>
               <Text style={styles.title}>Customer Details</Text>
-              <Text>Name: {customer.name}</Text>
-              <Text>Address: {customer.address}</Text>
-              <Text>Phone: {customer.phone}</Text>
+              <Text style={styles.impheading}>Name: {customer.name}</Text>
+              <Text style={styles.impheading}>Address: {customer.address}</Text>
+              <Text style={styles.impheading}>Phone: {customer.phone}</Text>
             </View>
 
             <View style={styles.section}>
               <Text style={styles.title}>Technician</Text>
-              <Text>Name: {technician.name}</Text>
-              <Text>ID: {technician.id}</Text>
+              <Text style={styles.impheading}>Name: {technician.name}</Text>
+              <Text style={styles.impheading}>ID: {technician.id}</Text>
             </View>
 
             <View style={styles.section}>
               <Text style={styles.title}>Services</Text>
               {services.map((item, i) => (
                 <View key={i} style={styles.serviceRow}>
-                  <Text>{item.name}</Text>
-                  <Text>Rs {item.price}</Text>
+                  <Text style={styles.impheading}>{item.name}</Text>
+                  <Text style={styles.impheading}>Rs {item.price}</Text>
                 </View>
               ))}
             </View>
@@ -140,7 +143,8 @@ const InvoiceModel = ({ visible, onClose, customer, technician, services }) => {
             </View>
 
             <View style={{ marginTop: 16 }}>
-              <Button title="Generate & Save PDF" onPress={generatePDF} />
+              {/* <Button title="Generate & Save PDF" onPress={generatePDF} /> */}
+              <Button title="Processing" onPress={() => router.navigate("OTPVerificationScreen")} />
               <View style={{ height: 10 }} />
               <Button title="Share Invoice" onPress={shareInvoice} />
               <View style={{ height: 10 }} />
@@ -162,13 +166,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: DarkTheme.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '85%',
     padding: 16,
   },
   header: {
+    color: DarkTheme.text,
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 12,
@@ -180,6 +185,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     marginBottom: 4,
+    color: DarkTheme.text,
   },
   serviceRow: {
     flexDirection: 'row',
@@ -194,5 +200,9 @@ const styles = StyleSheet.create({
   totalText: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: DarkTheme.text,
   },
+  impheading:{
+    color: DarkTheme.text,
+  }
 });
