@@ -12,8 +12,8 @@ import COLOR_SCHEME from "../../colors/MainStyle";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
-import { useRouter } from "expo-router";
 import InvoiceModel from "../../components/Models/InvoiceModel";
+import CustomDropdown from "../../components/CustomDropdown";
 
 const initialEntry = { partNo: "", partName: "", quantity: "", price: "" };
 
@@ -23,15 +23,12 @@ const StoreScreen = () => {
     { partNo: "PN002", partName: "Oil Filter", price: 75 },
     { partNo: "PN003", partName: "Air Filter", price: 90 },
   ];
-  const [dropdownOpenIndex, setDropdownOpenIndex] = useState(null);
-  const router = useRouter();
   const handlePartNoSelect = (index, selectedPart) => {
     const updatedEntries = [...entries];
     updatedEntries[index].partNo = selectedPart.partNo;
     updatedEntries[index].partName = selectedPart.partName;
     updatedEntries[index].price = selectedPart.price.toString();
     setEntries(updatedEntries);
-    setDropdownOpenIndex(null); // close dropdown
   };
 
   const [entries, setEntries] = useState([{ ...initialEntry }]);
@@ -117,38 +114,20 @@ const StoreScreen = () => {
             </TouchableOpacity>
 
             <Text style={styles.label}>Part No.</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() =>
-                setDropdownOpenIndex(dropdownOpenIndex === index ? null : index)
-              }
-            >
-              <Text
-                style={{
-                  color: entry.partNo
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.partNo || "Select Part No."}
-              </Text>
-            </TouchableOpacity>
+            <CustomDropdown
+              items={PARTS_LIST.map((part) => part.partNo)}
+              value={entry.partNo}
+              placeholder="Select Part No."
+              onSelect={(selectedPartNo) => {
+                const selectedPart = PARTS_LIST.find(
+                  (p) => p.partNo === selectedPartNo
+                );
+                handlePartNoSelect(index, selectedPart);
+              }}
+              style={{ marginBottom: 12 }}
+            />
 
-            {dropdownOpenIndex === index && (
-              <View style={styles.dropdownOptions}>
-                {PARTS_LIST.map((part) => (
-                  <TouchableOpacity
-                    key={part.partNo}
-                    onPress={() => handlePartNoSelect(index, part)}
-                    style={styles.dropdownItem}
-                  >
-                    <Text style={{ color: COLOR_SCHEME.text }}>
-                      {part.partNo}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
+            
 
             <Text style={styles.label}>Part Name</Text>
             <TextInput
@@ -274,20 +253,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
-  dropdownOptions: {
-    backgroundColor: COLOR_SCHEME.background,
-    borderWidth: 1,
-    borderColor: COLOR_SCHEME.grayText,
-    borderRadius: 8,
-    marginBottom: 12,
-    maxHeight: 150,
-    overflow: "hidden",
-  },
-  dropdownItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_SCHEME.grayText,
-  },
+ 
 });
 
 export default StoreScreen;

@@ -1,10 +1,19 @@
 import React, { useState } from "react";
-import {View,Text,TouchableOpacity,ScrollView,StyleSheet,Modal,FlatList} from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  FlatList,
+} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
 import { Entypo } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import CustomDropdown from "../../components/CustomDropdown";
 
 const predefinedFindings = [
   {
@@ -31,7 +40,7 @@ const TechnicalFindings = () => {
   const [activeField, setActiveField] = useState(null);
   const [dropdownIndex, setDropdownIndex] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-const router = useRouter()
+  const router = useRouter();
   const isFilled = (entry) =>
     entry.actualFault && entry.relevantReason && entry.correctiveAction;
 
@@ -44,11 +53,6 @@ const router = useRouter()
     setFindings(updated.length ? updated : [{ ...initialEntry }]);
   };
 
-  const openDropdown = (index, field) => {
-    setDropdownIndex(index);
-    setActiveField(field);
-    setDropdownVisible(true);
-  };
 
   const handleSelectPredefined = (value) => {
     const updated = [...findings];
@@ -66,10 +70,20 @@ const router = useRouter()
       return;
     }
     console.log("Submitted Findings:", findings);
-    router.push("/StoreScreen")
+    router.push("/StoreScreen");
     setSubmitted(true);
     setFindings([initialEntry]);
   };
+
+  const actualFaultOptions = [
+    ...new Set(predefinedFindings.map((item) => item.actualFault)),
+  ];
+  const relevantReasonOptions = [
+    ...new Set(predefinedFindings.map((item) => item.relevantReason)),
+  ];
+  const correctiveActionOptions = [
+    ...new Set(predefinedFindings.map((item) => item.correctiveAction)),
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
@@ -79,52 +93,40 @@ const router = useRouter()
         {findings.map((entry, index) => (
           <View key={index} style={styles.card}>
             <Text style={styles.label}>Actual Fault</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => openDropdown(index, "actualFault")}
-            >
-              <Text
-                style={{
-                  color: entry.actualFault
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.actualFault || "Select Actual Fault"}
-              </Text>
-            </TouchableOpacity>
+            <CustomDropdown
+              items={actualFaultOptions}
+              value={entry.actualFault}
+              placeholder="Select Actual Fault"
+              onSelect={(value) => {
+                const updated = [...findings];
+                updated[index].actualFault = value;
+                setFindings(updated);
+              }}
+            />
 
             <Text style={styles.label}>Relevant Reason</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => openDropdown(index, "relevantReason")}
-            >
-              <Text
-                style={{
-                  color: entry.relevantReason
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.relevantReason || "Select Relevant Reason"}
-              </Text>
-            </TouchableOpacity>
+            <CustomDropdown
+              items={relevantReasonOptions}
+              value={entry.relevantReason}
+              placeholder="Select Relevant Reason"
+              onSelect={(value) => {
+                const updated = [...findings];
+                updated[index].relevantReason = value;
+                setFindings(updated);
+              }}
+            />
 
             <Text style={styles.label}>Corrective Action</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => openDropdown(index, "correctiveAction")}
-            >
-              <Text
-                style={{
-                  color: entry.correctiveAction
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.correctiveAction || "Select Corrective Action"}
-              </Text>
-            </TouchableOpacity>
+            <CustomDropdown
+              items={correctiveActionOptions}
+              value={entry.correctiveAction}
+              placeholder="Select Corrective Action"
+              onSelect={(value) => {
+                const updated = [...findings];
+                updated[index].correctiveAction = value;
+                setFindings(updated);
+              }}
+            />
             <TouchableOpacity
               onPress={() => handleDelete(index)}
               style={styles.removeButton}
@@ -144,37 +146,6 @@ const router = useRouter()
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      <Modal
-        visible={dropdownVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setDropdownVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Select Option</Text>
-            <FlatList
-              data={predefinedFindings.map((item) => item[activeField])}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleSelectPredefined(item)}
-                >
-                  <Text style={styles.dropdownItemText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setDropdownVisible(false)}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
@@ -219,31 +190,6 @@ const styles = StyleSheet.create({
   },
   findingTitle: { fontWeight: "700", marginBottom: 8 },
   bold: { fontWeight: "600" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    maxHeight: "70%",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  dropdownItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
-  },
-  dropdownItemText: { fontSize: 16, fontWeight: "600" },
   cancelButton: {
     marginTop: 12,
     padding: 12,

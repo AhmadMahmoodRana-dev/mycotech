@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import {View,Text,TouchableOpacity,ScrollView,StyleSheet,Modal,FlatList,TextInput} from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  FlatList,
+  TextInput,
+} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
@@ -7,6 +16,7 @@ import { Entypo } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 import { useRouter } from "expo-router";
+import CustomDropdown from "../../components/CustomDropdown";
 
 const predefinedStatus = ["Estimate", "In Progress", "Completed"];
 const predefinedRemarks = ["no power", "overheating", "not responding"];
@@ -26,7 +36,7 @@ const Visits = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerMode, setDatePickerMode] = useState("date"); // "date" or "time"
   const [datePickerIndex, setDatePickerIndex] = useState(null);
-  const router = useRouter(); 
+  const router = useRouter();
   const isFilled = (entry) =>
     entry.name.trim() && entry.status && entry.remarks && entry.visitDate;
 
@@ -39,20 +49,7 @@ const Visits = () => {
     setVisits(updated.length ? updated : [{ ...initialEntry }]);
   };
 
-  const openDropdown = (index, field) => {
-    setDropdownIndex(index);
-    setActiveField(field);
-    setDropdownVisible(true);
-  };
-
-  const handleSelect = (value) => {
-    const updated = [...visits];
-    updated[dropdownIndex][activeField] = value;
-    setVisits(updated);
-    setDropdownVisible(false);
-    setDropdownIndex(null);
-    setActiveField(null);
-  };
+  
 
   const handleInputChange = (index, field, value) => {
     const updated = [...visits];
@@ -67,7 +64,7 @@ const Visits = () => {
       alert("Please fill out at least one complete visit.");
       return;
     }
-    
+
     // Example action: print to console or send to backend
     console.log("Submitted Visits:", completedVisits);
     alert("Visits submitted successfully!");
@@ -128,36 +125,22 @@ const Visits = () => {
             />
 
             <Text style={styles.label}>Status</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => openDropdown(index, "status")}
-            >
-              <Text
-                style={{
-                  color: entry.status
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.status || "Select Status"}
-              </Text>
-            </TouchableOpacity>
+            <CustomDropdown
+              items={predefinedStatus}
+              value={entry.status}
+              onSelect={(value) => handleInputChange(index, "status", value)}
+              placeholder="Select Status"
+              style={{ marginBottom: 12 }}
+            />
 
             <Text style={styles.label}>Remarks</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => openDropdown(index, "remarks")}
-            >
-              <Text
-                style={{
-                  color: entry.remarks
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.remarks || "Select Remarks"}
-              </Text>
-            </TouchableOpacity>
+            <CustomDropdown
+              items={predefinedRemarks}
+              value={entry.remarks}
+              onSelect={(value) => handleInputChange(index, "remarks", value)}
+              placeholder="Select Remarks"
+              style={{ marginBottom: 12 }}
+            />
 
             <Text style={styles.label}>Visit Date</Text>
             <TouchableOpacity
@@ -196,38 +179,7 @@ const Visits = () => {
         </TouchableOpacity>
       </ScrollView>
 
-      <Modal
-        visible={dropdownVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setDropdownVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Select Option</Text>
-            <FlatList
-              data={
-                activeField === "status" ? predefinedStatus : predefinedRemarks
-              }
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleSelect(item)}
-                >
-                  <Text style={styles.dropdownItemText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setDropdownVisible(false)}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+     
       {showDatePicker && (
         <DateTimePicker
           value={new Date()}

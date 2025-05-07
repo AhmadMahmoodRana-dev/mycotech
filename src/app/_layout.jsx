@@ -1,39 +1,21 @@
-import { Stack, useRouter } from "expo-router";
+import { useRouter, Slot } from "expo-router";
 import { StatusBar } from "react-native";
 import { useEffect } from "react";
 
 const RootNavigation = () => {
   const router = useRouter();
+  const isLogin = false;
 
   useEffect(() => {
-    const checkLogin = async () => {
-      const storedToken = true;
-      if (storedToken) {
-        try {
-          router.replace("/(main)");
-        } catch (err) {
-          router.replace("/(auth)");
-        }
-      } else {
-        router.replace("/(auth)");
-      }
-    };
-  
-    checkLogin();
+    setTimeout(() => {
+      router.replace(isLogin ? "/(main)" : "/(auth)");
+    }, 0);
   }, []);
-  
 
   return (
     <>
       <StatusBar hidden />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: true,
-          gestureDirection: "vertical",
-          animationMatchesGesture: true,
-        }}
-      />
+      <Slot />
     </>
   );
 };

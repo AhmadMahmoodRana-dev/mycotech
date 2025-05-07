@@ -1,11 +1,13 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import {Image,StyleSheet,Text,TextInput,TouchableOpacity} from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import COLOR_SCHEME from "../../colors/MainStyle"; // Update import path
+import COLOR_SCHEME from "../../colors/MainStyle";
+import { useRouter } from "expo-router";
 
 const index = () => {
+  const router = useRouter(); 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,9 +24,15 @@ const index = () => {
 
   const handleLogin = () => {
     try {
-      console.log("Login successful",formData); 
+      console.log("Login successful", formData);
+      router.replace("/(main)");
+      setFormData({
+        email: "",
+        password: "",
+        passwordVisible: false,
+      });
     } catch (error) {
-      console.error("Login error:", error); 
+      console.error("Login error:", error);
     }
   };
 
@@ -96,7 +104,8 @@ const index = () => {
             <Text style={Styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => handleLogin()}
+          <TouchableOpacity
+            onPress={() => handleLogin()}
             style={Styles.loginButton}
             activeOpacity={0.8}
           >

@@ -16,6 +16,7 @@ import { styles } from "../../styles/ComplaintActivityForm";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import CustomDropdown from "../../components/CustomDropdown";
 const ComplaintActivityForm = () => {
   const navigate = useRouter();
   const [formData, setFormData] = useState({
@@ -33,7 +34,6 @@ const ComplaintActivityForm = () => {
     paymentType: "",
     attachments: [],
   });
-  const [showDropdown, setShowDropdown] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
@@ -216,30 +216,12 @@ const ComplaintActivityForm = () => {
             onChangeText={(value) => handleChange("serialNo", value)}
           />
 
-          <TouchableOpacity
-            style={styles.dropdown}
-            onPress={() => setShowDropdown(!showDropdown)}
-          >
-            <Text style={styles.dropdownText}>
-              {formData.paymentType || "Select Payment Type"}
-            </Text>
-          </TouchableOpacity>
-          {showDropdown && (
-            <View style={styles.dropdownList}>
-              {["Warranty", "Cash", "Credit"].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  onPress={() => {
-                    handleChange("paymentType", option);
-                    setShowDropdown(false);
-                  }}
-                  style={styles.dropdownItem}
-                >
-                  <Text style={{ color: "#fff" }}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
+          <CustomDropdown
+            value={formData.paymentType}
+            onSelect={(value) => handleChange("paymentType", value)}
+            items={["Warranty", "Cash", "Credit"]}
+            placeholder="Select Payment Type"
+          />
 
           {formData.paymentType === "Warranty" && (
             <View>
@@ -277,7 +259,9 @@ const ComplaintActivityForm = () => {
             </View>
           )}
 
-          {formData.model === "" || formData.serialNo === "" || formData.paymentType==="" ? null : (
+          {formData.model === "" ||
+          formData.serialNo === "" ||
+          formData.paymentType === "" ? null : (
             <TouchableOpacity
               style={styles.scanButton}
               onPress={() => navigate.push("Visits")}
