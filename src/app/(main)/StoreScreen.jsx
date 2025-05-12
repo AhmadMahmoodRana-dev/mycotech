@@ -103,6 +103,11 @@ const StoreScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
         <BackHeader name={"Store"} gap={120} />
+        {isEntryFilled(entries[entries.length - 1]) && (
+          <TouchableOpacity onPress={addNewEntry} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add New</Text>
+          </TouchableOpacity>
+        )}
 
         {entries.map((entry, index) => (
           <View key={index} style={styles.card}>
@@ -126,8 +131,6 @@ const StoreScreen = () => {
               }}
               style={{ marginBottom: 12 }}
             />
-
-            
 
             <Text style={styles.label}>Part Name</Text>
             <TextInput
@@ -165,11 +168,6 @@ const StoreScreen = () => {
             />
           </View>
         ))}
-        {isEntryFilled(entries[entries.length - 1]) && (
-          <TouchableOpacity onPress={addNewEntry} style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ Add New</Text>
-          </TouchableOpacity>
-        )}
 
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.submitButtonText}>Submit</Text>
@@ -253,7 +251,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
- 
 });
 
 export default StoreScreen;

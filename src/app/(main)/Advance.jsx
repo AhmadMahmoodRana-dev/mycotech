@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import {View,Text,ScrollView,StyleSheet,Alert,TouchableOpacity,TextInput} from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -52,6 +60,11 @@ const Advance = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
         <BackHeader name={"Advance"} gap={120} />
+        {isEntryFilled(entries[entries.length - 1]) && (
+          <TouchableOpacity onPress={addNewEntry} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add New</Text>
+          </TouchableOpacity>
+        )}
 
         {entries.map((entry, index) => (
           <View key={index} style={styles.card}>
@@ -86,13 +99,6 @@ const Advance = () => {
             />
           </View>
         ))}
-
-        {/* Show "+ Add New" only if last entry is filled */}
-        {isEntryFilled(entries[entries.length - 1]) && (
-          <TouchableOpacity onPress={addNewEntry} style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ Add New</Text>
-          </TouchableOpacity>
-        )}
 
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.submitButtonText}>Submit</Text>

@@ -89,6 +89,11 @@ const TechnicalFindings = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
         <BackHeader name={"Technician Findings"} gap={50} />
+    {isFilled(findings[findings.length - 1]) && (
+      <TouchableOpacity onPress={addFinding} style={styles.addButton}>
+        <Text style={styles.addButtonText}>+ Add New</Text>
+      </TouchableOpacity>
+    )}
 
         {findings.map((entry, index) => (
           <View key={index} style={styles.card}>
@@ -136,11 +141,6 @@ const TechnicalFindings = () => {
           </View>
         ))}
 
-        {isFilled(findings[findings.length - 1]) && (
-          <TouchableOpacity onPress={addFinding} style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ Add New</Text>
-          </TouchableOpacity>
-        )}
 
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.submitButtonText}>Submit</Text>

@@ -49,8 +49,6 @@ const Visits = () => {
     setVisits(updated.length ? updated : [{ ...initialEntry }]);
   };
 
-  
-
   const handleInputChange = (index, field, value) => {
     const updated = [...visits];
     updated[index][field] = value;
@@ -110,7 +108,12 @@ const Visits = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
-        <BackHeader name={"Visits"} gap={50} />
+        <BackHeader name={"Visits"} gap={120} />
+        {isFilled(visits[visits.length - 1]) && (
+          <TouchableOpacity onPress={addVisit} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add New</Text>
+          </TouchableOpacity>
+        )}
 
         {visits.map((entry, index) => (
           <View key={index} style={styles.card}>
@@ -169,17 +172,11 @@ const Visits = () => {
           </View>
         ))}
 
-        {isFilled(visits[visits.length - 1]) && (
-          <TouchableOpacity onPress={addVisit} style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ Add New</Text>
-          </TouchableOpacity>
-        )}
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
 
-     
       {showDatePicker && (
         <DateTimePicker
           value={new Date()}

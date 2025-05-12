@@ -126,8 +126,8 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: COLOR_SCHEME.text,
     fontWeight: "600",
-    marginBottom: 15,
-    // paddingHorizontal: 10,
+    marginBottom: 10,
+    marginTop: 10,
   },
   dropdown: {
     borderWidth: 1,
@@ -159,5 +159,11 @@ export const styles = StyleSheet.create({
   addButtonText:{
     color: "#fff",
     fontWeight: "600",
-  }
+  },
+  inputContainer: {
+    backgroundColor: COLOR_SCHEME.background,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical:14
+  },
 });

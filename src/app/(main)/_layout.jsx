@@ -17,6 +17,7 @@ export default function MainLayout() {
       <Stack.Screen name="Advance" />
       <Stack.Screen name="OTPVerificationScreen" />
       <Stack.Screen name="InventoryPage" />
+      <Stack.Screen name="OHStockPage" />
     </Stack>
   );
 }

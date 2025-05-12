@@ -12,7 +12,7 @@ const quickActions = [
   { id: "1", icon: "work", title: "Complaints", route: "/Complaint"},
   { id: "2", icon: "summarize", title: "Summary", route: "" },
   { id: "3", icon: "inventory", title: "Inventory",route:"/InventoryPage"},
-  { id: "4", icon: "open-with", title: "OH Stock" },
+  { id: "4", icon: "open-with", title: "OH Stock",route:"/OHStockPage"},
 ];
 
 const recentJobs = [

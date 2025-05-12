@@ -17,6 +17,8 @@ import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import CustomDropdown from "../../components/CustomDropdown";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Platform } from "react-native";
 const ComplaintActivityForm = () => {
   const navigate = useRouter();
   const [formData, setFormData] = useState({
@@ -33,12 +35,22 @@ const ComplaintActivityForm = () => {
     serialNo: "",
     paymentType: "",
     attachments: [],
+    purchaseDate: "",
   });
   const scrollViewRef = useRef(null);
   const [showScanner, setShowScanner] = useState(false);
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
   const qrLock = useRef(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      const isoDate = selectedDate.toISOString().split("T")[0]; // e.g. 2025-05-12
+      handleChange("purchaseDate", isoDate);
+    }
+  };
 
   const handleChange = (key, value) => {
     setFormData((prev) => {
@@ -236,44 +248,74 @@ const ComplaintActivityForm = () => {
           />
 
           {formData.paymentType === "Warranty" && (
-            <View>
-              <Text style={styles.label}>Upload Warranty Document</Text>
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                <TouchableOpacity
-                  onPress={pickImagesFromGallery}
-                  style={styles.addButton}
-                >
-                  <Text style={styles.addButtonText}>Gallery</Text>
-                </TouchableOpacity>
+            <>
+              <View>
+                <Text style={styles.label}>Upload Warranty Document</Text>
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <TouchableOpacity
+                    onPress={pickImagesFromGallery}
+                    style={styles.addButton}
+                  >
+                    <Text style={styles.addButtonText}>Gallery</Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  onPress={takePhotoFromCamera}
-                  style={styles.addButton}
-                >
-                  <Text style={styles.addButtonText}>Camera</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={takePhotoFromCamera}
+                    style={styles.addButton}
+                  >
+                    <Text style={styles.addButtonText}>Camera</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView horizontal style={{ marginTop: 10 }}>
+                  {formData.attachments.map((img, i) => (
+                    <Image
+                      key={i}
+                      source={{ uri: img.uri }}
+                      style={{
+                        width: 80,
+                        height: 80,
+                        marginRight: 10,
+                        borderRadius: 8,
+                      }}
+                    />
+                  ))}
+                </ScrollView>
               </View>
+              <View style={{ marginTop: 20 }}>
+                <Text style={styles.label}>Date of Purchase</Text>
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  style={[styles.inputContainer, { justifyContent: "center" }]}
+                >
+                  <Text style={{ color: "white" }}>
+                    {formData.purchaseDate
+                      ? formData.purchaseDate
+                      : "Select Date"}
+                  </Text>
+                </TouchableOpacity>
 
-              <ScrollView horizontal style={{ marginTop: 10 }}>
-                {formData.attachments.map((img, i) => (
-                  <Image
-                    key={i}
-                    source={{ uri: img.uri }}
-                    style={{
-                      width: 80,
-                      height: 80,
-                      marginRight: 10,
-                      borderRadius: 8,
-                    }}
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={
+                      formData.purchaseDate
+                        ? new Date(formData.purchaseDate)
+                        : new Date()
+                    }
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    onChange={handleDateChange}
                   />
-                ))}
-              </ScrollView>
-            </View>
+                )}
+              </View>
+            </>
           )}
 
           {formData.model === "" ||
           formData.serialNo === "" ||
-          formData.paymentType === "" ? null : (
+          formData.paymentType === "" ||
+          (formData.paymentType === "Warranty" &&
+            formData.purchaseDate === "") ? null : (
             <TouchableOpacity
               style={styles.scanButton}
               onPress={() => navigate.push("Visits")}

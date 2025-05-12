@@ -18,7 +18,7 @@ const ContactedDetail = () => {
     phone: "3008878690",
     landline: "02135678900",
     address: "Test Address, City",
-    phoneStatus: "working",
+    phoneStatus: "Contact Status",
     visitDate: new Date(),
   });
 
@@ -34,7 +34,7 @@ const ContactedDetail = () => {
 
   const [isUpdated, setIsUpdated] = useState(false);
 
-  const statusOptions = ["working", "not reachable", "wrong number"];
+  const statusOptions = ["Contact Status", "not reachable", "wrong number"];
 
   useEffect(() => {
     const changed =
