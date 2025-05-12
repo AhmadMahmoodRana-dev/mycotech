@@ -32,7 +32,7 @@ const RecentJobCard = ({ item, router }) => {
   return (
     <TouchableOpacity
       style={styles.jobCard}
-      onPress={() => router.push({ pathname: "ContactedNumber", params: item })}
+      onPress={() => router.push({ pathname: "ContactedDetail", params: item })}
     >
       <View style={styles.jobHeader}>
         <View style={styles.CardMain}>

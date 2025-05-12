@@ -10,7 +10,7 @@ import Dropdown from "../../components/Dropdown";
 import CustomInput from "../../components/CustomInput";
 import BackHeader from "../../components/BackHeader";
 
-const ContactedNumber = () => {
+const ContactedDetail = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
 
@@ -87,7 +87,7 @@ const ContactedNumber = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <BackHeader name="Contacted Number" gap={60} />
+      <BackHeader name="Contacted Detail" gap={60} />
 
       {/* Complaint History Navigation */}
       <TouchableOpacity
@@ -279,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContactedNumber;
+export default ContactedDetail;

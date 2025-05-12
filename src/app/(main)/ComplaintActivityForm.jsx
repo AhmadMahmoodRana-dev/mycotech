@@ -34,13 +34,25 @@ const ComplaintActivityForm = () => {
     paymentType: "",
     attachments: [],
   });
+  const scrollViewRef = useRef(null);
   const [showScanner, setShowScanner] = useState(false);
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
   const qrLock = useRef(false);
 
   const handleChange = (key, value) => {
-    setFormData({ ...formData, [key]: value });
+    setFormData((prev) => {
+      const updated = { ...prev, [key]: value };
+
+      if (key === "paymentType") {
+        // Wait for UI to update before scrolling
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 300);
+      }
+
+      return updated;
+    });
   };
 
   const handleBarcodeScanned = ({ data }) => {
@@ -141,7 +153,7 @@ const ComplaintActivityForm = () => {
         <Text style={styles.productName}>{formData.appliance}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
         {/* Existing Fields */}
         <View style={styles.formCard}>
           {/* Customer Name */}
@@ -152,14 +164,6 @@ const ComplaintActivityForm = () => {
             value={formData.name}
             onChangeText={(value) => handleChange("name", value)}
           />
-          {/* Phone No */}
-          <CustomInput
-            editable={false}
-            icon={"call"}
-            placeholder="Phone No"
-            value={formData.phone}
-            onChangeText={(value) => handleChange("phone", value)}
-          />
           {/* Address */}
           <CustomInput
             editable={false}
@@ -167,6 +171,14 @@ const ComplaintActivityForm = () => {
             placeholder={"Address"}
             value={formData.address}
             onChangeText={(value) => handleChange("address", value)}
+          />
+          {/* Phone No */}
+          <CustomInput
+            editable={false}
+            icon={"call"}
+            placeholder="Phone No"
+            value={formData.phone}
+            onChangeText={(value) => handleChange("phone", value)}
           />
           {/* Problem */}
           <CustomInput
@@ -270,7 +282,6 @@ const ComplaintActivityForm = () => {
             </TouchableOpacity>
           )}
         </View>
-
         {/* Scanner Modal */}
         <QrcodeScannerModel
           requestPermission={requestPermission}

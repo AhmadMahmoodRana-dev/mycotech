@@ -6,7 +6,7 @@ export default function MainLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="CalendarPage" />
       <Stack.Screen name="Complaint" />
-      <Stack.Screen name="ContactedNumber" />
+      <Stack.Screen name="ContactedDetail" />
       <Stack.Screen name="CustomerComplaintsHistory" />
       <Stack.Screen name="CustomerComplaintHistoryDetail" />
       <Stack.Screen name="Profile" />
@@ -16,6 +16,7 @@ export default function MainLayout() {
       <Stack.Screen name="Visits" />
       <Stack.Screen name="Advance" />
       <Stack.Screen name="OTPVerificationScreen" />
+      <Stack.Screen name="InventoryPage" />
     </Stack>
   );
 }
