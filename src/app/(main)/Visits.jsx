@@ -1,44 +1,24 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Modal,
-  FlatList,
-  TextInput,
-} from "react-native";
+import {View,Text,TouchableOpacity,ScrollView,StyleSheet,TextInput} from "react-native";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "../../components/BackHeader";
 import { Entypo } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Platform } from "react-native";
 import { useRouter } from "expo-router";
 import CustomDropdown from "../../components/CustomDropdown";
 
 const predefinedStatus = ["Estimate", "In Progress", "Completed"];
-const predefinedRemarks = ["no power", "overheating", "not responding"];
 
 const initialEntry = {
   name: "Ahmad Mahmood",
   status: "",
   remarks: "",
-  visitDate: null,
 };
 
 const Visits = () => {
   const [visits, setVisits] = useState([{ ...initialEntry }]);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [activeField, setActiveField] = useState(null);
-  const [dropdownIndex, setDropdownIndex] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [datePickerMode, setDatePickerMode] = useState("date"); // "date" or "time"
-  const [datePickerIndex, setDatePickerIndex] = useState(null);
   const router = useRouter();
-  const isFilled = (entry) =>
-    entry.name.trim() && entry.status && entry.remarks && entry.visitDate;
+  const isFilled = (entry) => entry.name.trim() && entry.status;
 
   const addVisit = () => {
     setVisits([...visits, { ...initialEntry }]);
@@ -70,39 +50,6 @@ const Visits = () => {
 
     // Optionally reset form
     setVisits([{ ...initialEntry }]);
-  };
-
-  const openDatePicker = (index) => {
-    setDatePickerMode("date");
-    setDatePickerIndex(index);
-    setShowDatePicker(true);
-  };
-
-  const onDateChange = (event, selectedDate) => {
-    if (event.type === "dismissed") {
-      setShowDatePicker(false);
-      return;
-    }
-
-    const currentDate = selectedDate;
-
-    if (datePickerMode === "date") {
-      // Show time picker next
-      setDatePickerMode("time");
-    } else {
-      const updated = [...visits];
-      const prevDate = updated[datePickerIndex].visitDate || new Date();
-      updated[datePickerIndex].visitDate = new Date(
-        prevDate.getFullYear(),
-        prevDate.getMonth(),
-        prevDate.getDate(),
-        currentDate.getHours(),
-        currentDate.getMinutes()
-      );
-      setVisits(updated);
-      setShowDatePicker(false);
-      setDatePickerIndex(null);
-    }
   };
 
   return (
@@ -137,31 +84,13 @@ const Visits = () => {
             />
 
             <Text style={styles.label}>Remarks</Text>
-            <CustomDropdown
-              items={predefinedRemarks}
-              value={entry.remarks}
-              onSelect={(value) => handleInputChange(index, "remarks", value)}
-              placeholder="Select Remarks"
-              style={{ marginBottom: 12 }}
-            />
-
-            <Text style={styles.label}>Visit Date</Text>
-            <TouchableOpacity
+            <TextInput
               style={styles.input}
-              onPress={() => openDatePicker(index)}
-            >
-              <Text
-                style={{
-                  color: entry.visitDate
-                    ? COLOR_SCHEME.text
-                    : COLOR_SCHEME.grayText,
-                }}
-              >
-                {entry.visitDate
-                  ? new Date(entry.visitDate).toLocaleString()
-                  : "Select Date & Time"}
-              </Text>
-            </TouchableOpacity>
+              placeholder="Enter Your Remarks"
+              placeholderTextColor={COLOR_SCHEME.grayText}
+              value={entry.remarks}
+              onChangeText={(text) => handleInputChange(index, "remarks", text)}
+            />
 
             <TouchableOpacity
               onPress={() => handleDelete(index)}
@@ -176,15 +105,6 @@ const Visits = () => {
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={new Date()}
-          mode={datePickerMode}
-          display={Platform.OS === "ios" ? "inline" : "default"}
-          onChange={onDateChange}
-        />
-      )}
     </SafeAreaView>
   );
 };

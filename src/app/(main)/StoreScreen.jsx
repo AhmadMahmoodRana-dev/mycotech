@@ -16,7 +16,7 @@ import InvoiceModel from "../../components/Models/InvoiceModel";
 import CustomDropdown from "../../components/CustomDropdown";
 
 const initialEntry = { partNo: "", partName: "", quantity: "", price: "" };
-
+const initialService = { name: "", price: "" };
 const StoreScreen = () => {
   const PARTS_LIST = [
     { partNo: "PN001", partName: "Brake Pad", price: 120 },
@@ -32,6 +32,7 @@ const StoreScreen = () => {
   };
 
   const [entries, setEntries] = useState([{ ...initialEntry }]);
+  const [serviceEntries, setServiceEntries] = useState([{ ...initialService }]);
 
   const handleInputChange = (index, field, value) => {
     const newEntries = [...entries];
@@ -68,24 +69,37 @@ const StoreScreen = () => {
   const [showInvoice, setShowInvoice] = useState(false);
 
   const handleSubmit = () => {
-    const allFilled = entries.every(isEntryFilled);
-    if (!allFilled) {
-      Alert.alert(
-        "Incomplete Form",
-        "Please fill out all fields before submitting."
-      );
-      return;
+    if (selectedType === "hardware") {
+      const allFilled = entries.every(isEntryFilled);
+      if (!allFilled) {
+        Alert.alert(
+          "Incomplete Form",
+          "Please fill out all fields before submitting."
+        );
+        return;
+      }
+      const parsedEntries = entries.map((entry) => ({
+        ...entry,
+        quantity: Number(entry.quantity),
+        price: Number(entry.price),
+      }));
+      console.log("Submitted Hardware Entries:", parsedEntries);
+    } else {
+      const allFilled = serviceEntries.every(isServiceFilled);
+      if (!allFilled) {
+        Alert.alert("Incomplete Form", "Please fill out all service entries.");
+        return;
+      }
+      const parsedServices = serviceEntries.map((entry) => ({
+        ...entry,
+        price: Number(entry.price),
+      }));
+      console.log("Submitted Service Entries:", parsedServices);
     }
-    const parsedEntries = entries.map((entry) => ({
-      ...entry,
-      quantity: Number(entry.quantity),
-      price: Number(entry.price),
-    }));
-    setShowInvoice(true); // Show modal on success
-    // router.push("Advance")
-    console.log("Submitted Entries:", parsedEntries);
-    // ✅ Clear the form
+
+    setShowInvoice(true);
     setEntries([{ ...initialEntry }]);
+    setServiceEntries([{ ...initialService }]);
   };
 
   const technician = { name: "Ahmad Mahmood", id: "TECH1234" };
@@ -99,75 +113,179 @@ const StoreScreen = () => {
     { name: "Gas Refill", price: 1500 },
     { name: "General Maintenance", price: 1000 },
   ];
+
+  const [selectedType, setSelectedType] = useState("hardware");
+
+  const handleServiceSelect = (index, selectedServiceName) => {
+    const selectedService = services.find(
+      (s) => s.name === selectedServiceName
+    );
+    const updatedServices = [...serviceEntries];
+    updatedServices[index].name = selectedService.name;
+    updatedServices[index].price = selectedService.price.toString();
+    setServiceEntries(updatedServices);
+  };
+
+  const isServiceFilled = (entry) => entry.name && entry.price;
+
+  const addNewService = () => {
+    const lastEntry = serviceEntries[serviceEntries.length - 1];
+    if (!isServiceFilled(lastEntry)) {
+      Alert.alert(
+        "Incomplete Entry",
+        "Please fill out all service fields before adding a new one."
+      );
+      return;
+    }
+    setServiceEntries([...serviceEntries, { ...initialService }]);
+  };
+
+  const removeService = (indexToRemove) => {
+    if (serviceEntries.length === 1) {
+      Alert.alert("Minimum Entry", "At least one service must remain.");
+      return;
+    }
+    const updated = serviceEntries.filter(
+      (_, index) => index !== indexToRemove
+    );
+    setServiceEntries(updated);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR_SCHEME.background }}>
       <ScrollView style={styles.container}>
         <BackHeader name={"Store"} gap={120} />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            style={[
+              styles.tabButton,
+              selectedType === "hardware" && styles.activeTab,
+            ]}
+            onPress={() => setSelectedType("hardware")}
+          >
+            <Text style={styles.tabText}>Hardware</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tabButton,
+              selectedType === "services" && styles.activeTab,
+            ]}
+            onPress={() => setSelectedType("services")}
+          >
+            <Text style={styles.tabText}>Services</Text>
+          </TouchableOpacity>
+        </View>
         {isEntryFilled(entries[entries.length - 1]) && (
           <TouchableOpacity onPress={addNewEntry} style={styles.addButton}>
             <Text style={styles.addButtonText}>+ Add New</Text>
           </TouchableOpacity>
         )}
+        {isServiceFilled(serviceEntries[serviceEntries.length - 1]) && (
+          <TouchableOpacity onPress={addNewService} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add New</Text>
+          </TouchableOpacity>
+        )}
 
-        {entries.map((entry, index) => (
-          <View key={index} style={styles.card}>
-            <TouchableOpacity
-              onPress={() => removeEntry(index)}
-              style={styles.removeButton}
-            >
-              <Entypo name="cross" style={styles.removeButtonText} />
-            </TouchableOpacity>
+        {selectedType === "hardware" ? (
+          entries.map((entry, index) => (
+            <View key={index} style={styles.card}>
+              <TouchableOpacity
+                onPress={() => removeEntry(index)}
+                style={styles.removeButton}
+              >
+                <Entypo name="cross" style={styles.removeButtonText} />
+              </TouchableOpacity>
 
-            <Text style={styles.label}>Part No.</Text>
-            <CustomDropdown
-              items={PARTS_LIST.map((part) => part.partNo)}
-              value={entry.partNo}
-              placeholder="Select Part No."
-              onSelect={(selectedPartNo) => {
-                const selectedPart = PARTS_LIST.find(
-                  (p) => p.partNo === selectedPartNo
-                );
-                handlePartNoSelect(index, selectedPart);
-              }}
-              style={{ marginBottom: 12 }}
-            />
+              <Text style={styles.label}>Part No.</Text>
+              <CustomDropdown
+                items={PARTS_LIST.map((part) => part.partNo)}
+                value={entry.partNo}
+                placeholder="Select Part No."
+                onSelect={(selectedPartNo) => {
+                  const selectedPart = PARTS_LIST.find(
+                    (p) => p.partNo === selectedPartNo
+                  );
+                  handlePartNoSelect(index, selectedPart);
+                }}
+                style={{ marginBottom: 12 }}
+              />
 
-            <Text style={styles.label}>Part Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Part Name"
-              placeholderTextColor={COLOR_SCHEME.grayText}
-              value={entry.partName}
-              editable={false}
-              onChangeText={(value) =>
-                handleInputChange(index, "partName", value)
-              }
-            />
+              <Text style={styles.label}>Part Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Part Name"
+                placeholderTextColor={COLOR_SCHEME.grayText}
+                value={entry.partName}
+                editable={false}
+                onChangeText={(value) =>
+                  handleInputChange(index, "partName", value)
+                }
+              />
 
-            <Text style={styles.label}>Quantity</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Quantity"
-              placeholderTextColor={COLOR_SCHEME.grayText}
-              keyboardType="numeric"
-              value={entry.quantity}
-              onChangeText={(value) =>
-                handleInputChange(index, "quantity", value)
-              }
-            />
+              <Text style={styles.label}>Quantity</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Quantity"
+                placeholderTextColor={COLOR_SCHEME.grayText}
+                keyboardType="numeric"
+                value={entry.quantity}
+                onChangeText={(value) =>
+                  handleInputChange(index, "quantity", value)
+                }
+              />
 
-            <Text style={styles.label}>Price</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Price"
-              placeholderTextColor={COLOR_SCHEME.grayText}
-              keyboardType="numeric"
-              value={entry.price}
-              editable={false}
-              onChangeText={(value) => handleInputChange(index, "price", value)}
-            />
-          </View>
-        ))}
+              <Text style={styles.label}>Price</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Price"
+                placeholderTextColor={COLOR_SCHEME.grayText}
+                keyboardType="numeric"
+                value={entry.price}
+                editable={false}
+                onChangeText={(value) =>
+                  handleInputChange(index, "price", value)
+                }
+              />
+            </View>
+          ))
+        ) : (
+          <>
+            {serviceEntries.map((entry, index) => (
+              <View key={index} style={styles.card}>
+                <TouchableOpacity
+                  onPress={() => removeService(index)}
+                  style={styles.removeButton}
+                >
+                  <Entypo name="cross" style={styles.removeButtonText} />
+                </TouchableOpacity>
+
+                <Text style={styles.label}>Service</Text>
+                <CustomDropdown
+                  items={services.map((s) => s.name)}
+                  value={entry.name}
+                  placeholder="Choose Service"
+                  onSelect={(serviceName) =>
+                    handleServiceSelect(index, serviceName)
+                  }
+                  style={{ marginBottom: 12 }}
+                />
+
+                <Text style={styles.label}>Price</Text>
+                <TextInput
+                  style={styles.input}
+                  value={entry.price}
+                  editable={false}
+                />
+              </View>
+            ))}
+          </>
+        )}
 
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.submitButtonText}>Submit</Text>
@@ -250,6 +368,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "700",
     fontSize: 16,
+  },
+  tabButton: {
+    padding: 10,
+    paddingHorizontal: 30,
+    borderWidth: 1,
+    borderColor: COLOR_SCHEME.accent,
+    borderRadius: 8,
+    marginHorizontal: 10,
+  },
+  activeTab: {
+    backgroundColor: COLOR_SCHEME.accent,
+  },
+  tabText: {
+    color: COLOR_SCHEME.text,
+    fontWeight: "600",
   },
 });
 

@@ -1,12 +1,5 @@
 import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Image,
-} from "react-native";
+import {View,Text,TouchableOpacity,ScrollView,Alert,Image} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../../components/CustomInput";
 import { useCameraPermissions } from "expo-camera";

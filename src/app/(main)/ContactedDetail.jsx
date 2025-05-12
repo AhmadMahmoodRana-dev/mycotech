@@ -25,7 +25,9 @@ const ContactedDetail = () => {
   const [phone, setPhone] = useState(initialData.current.phone);
   const [landline, setLandline] = useState(initialData.current.landline);
   const [address, setAddress] = useState(initialData.current.address);
-  const [phoneStatus, setPhoneStatus] = useState(initialData.current.phoneStatus);
+  const [phoneStatus, setPhoneStatus] = useState(
+    initialData.current.phoneStatus
+  );
   const [visitDate, setVisitDate] = useState(initialData.current.visitDate);
 
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
@@ -84,6 +86,7 @@ const ContactedDetail = () => {
         return COLOR_SCHEME.grayText;
     }
   };
+  const isCompleted = params.status === "Completed";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,36 +114,108 @@ const ContactedDetail = () => {
       </View>
 
       {/* Complaint Status */}
-      <TouchableOpacity
-        onPress={() => router.push("ComplaintActivityForm")}
-        style={[styles.arrivalButton, { backgroundColor: getStatusColor(params.status) }]}
-      >
-        <Ionicons name="navigate" size={20} color="white" style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>Complaint is {params.status}</Text>
-      </TouchableOpacity>
+      {params.status == "Completed" ? (
+        <View
+          style={[
+            styles.arrivalButton,
+            { backgroundColor: getStatusColor(params.status) },
+          ]}
+        >
+          <Ionicons
+            name="navigate"
+            size={20}
+            color="white"
+            style={styles.buttonIcon}
+          />
+          <Text style={styles.buttonText}>Complaint is {params.status}</Text>
+        </View>
+      ) : (
+        <TouchableOpacity
+          onPress={() => router.push("ComplaintActivityForm")}
+          style={[
+            styles.arrivalButton,
+            { backgroundColor: getStatusColor(params.status) },
+          ]}
+        >
+          <Ionicons
+            name="navigate"
+            size={20}
+            color="white"
+            style={styles.buttonIcon}
+          />
+          <Text style={styles.buttonText}>Complaint is {params.status}</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Editable Contact Form */}
       <View style={styles.formCard}>
-        <CustomInput icon="person" placeholder="Name" value="Ahmad Mahmood Rana" editable={false} />
-        <CustomInput iconFunction={handleCall} icon="call" placeholder="Phone No" value={phone} editable={false} />
-        <CustomInput icon="phone-portrait" placeholder="Landline No" value={landline} editable={false} />
-        
-        <TouchableOpacity style={styles.inputGroup} onPress={() => setShowStatusDropdown(true)}>
-          <Ionicons name="information-circle" size={18} color={COLOR_SCHEME.grayText} style={styles.inputIcon} />
-          <Text style={[styles.input, { paddingVertical: 12 }]}>{phoneStatus}</Text>
-          <Ionicons name="chevron-down" size={16} color={COLOR_SCHEME.grayText} />
+        <CustomInput
+          icon="person"
+          placeholder="Name"
+          value="Ahmad Mahmood Rana"
+          editable={false}
+        />
+
+        <CustomInput
+          iconFunction={!isCompleted ? handleCall : undefined}
+          icon="call"
+          placeholder="Phone No"
+          value={phone}
+          editable={!isCompleted}
+        />
+
+        <CustomInput
+          icon="phone-portrait"
+          placeholder="Landline No"
+          value={landline}
+          editable={!isCompleted}
+        />
+
+        <TouchableOpacity
+          style={styles.inputGroup}
+          onPress={() => !isCompleted && setShowStatusDropdown(true)}
+          disabled={isCompleted}
+        >
+          <Ionicons
+            name="information-circle"
+            size={18}
+            color={COLOR_SCHEME.grayText}
+            style={styles.inputIcon}
+          />
+          <Text style={[styles.input, { paddingVertical: 12 }]}>
+            {phoneStatus}
+          </Text>
+          <Ionicons
+            name="chevron-down"
+            size={16}
+            color={COLOR_SCHEME.grayText}
+          />
         </TouchableOpacity>
 
-        <CustomInput icon="location" placeholder="Address" value={address} editable={false} />
+        <CustomInput
+          icon="location"
+          placeholder="Address"
+          value={address}
+          editable={!isCompleted}
+        />
 
-        <TouchableOpacity style={styles.inputGroup} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar" size={18} color={COLOR_SCHEME.grayText} style={styles.inputIcon} />
+        <TouchableOpacity
+          style={styles.inputGroup}
+          onPress={() => !isCompleted && setShowDatePicker(true)}
+          disabled={isCompleted}
+        >
+          <Ionicons
+            name="calendar"
+            size={18}
+            color={COLOR_SCHEME.grayText}
+            style={styles.inputIcon}
+          />
           <Text style={[styles.input, { paddingVertical: 12 }]}>
             {visitDate ? visitDate.toLocaleString() : "Select Visit Date"}
           </Text>
         </TouchableOpacity>
 
-        {isUpdated && (
+        {isUpdated && !isCompleted && (
           <TouchableOpacity
             style={{
               backgroundColor: COLOR_SCHEME.accent,
@@ -152,7 +227,13 @@ const ContactedDetail = () => {
               gap: 10,
             }}
             onPress={() => {
-              initialData.current = { phone, landline, address, phoneStatus, visitDate };
+              initialData.current = {
+                phone,
+                landline,
+                address,
+                phoneStatus,
+                visitDate,
+              };
               setIsUpdated(false);
             }}
           >
