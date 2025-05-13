@@ -5,11 +5,14 @@ import { View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { useRouter } from "expo-router";
+import axios from "axios";
+import BaseUrl from "../../common/BaseUrl";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const index = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
     passwordVisible: false,
   });
@@ -21,11 +24,18 @@ const index = () => {
       [name]: value,
     }));
   };
-
-  const handleLogin = () => {
+  const handleLogin = async () => {
     try {
-      console.log("Login successful", formData);
-      router.replace("/(main)");
+      const { data } = await axios.post(`${BaseUrl}/auth/login`, formData);
+      console.log("Login successful", data);
+  
+      const currentTime = Date.now();
+      await AsyncStorage.setItem("authToken", data.token);
+      await AsyncStorage.setItem("tokenTime", currentTime.toString());
+  
+      // Redirect to home inside main
+      router.replace("/(main)/");
+  
       setFormData({
         email: "",
         password: "",
@@ -35,6 +45,8 @@ const index = () => {
       console.error("Login error:", error);
     }
   };
+  
+  
 
   return (
     <SafeAreaView style={Styles.container}>
@@ -59,10 +71,10 @@ const index = () => {
             />
             <TextInput
               style={Styles.input}
-              placeholder="email"
+              placeholder="UserName"
               placeholderTextColor={COLOR_SCHEME.grayText}
-              value={formData.email}
-              onChangeText={(text) => handleInputChange("email", text)}
+              value={formData.username}
+              onChangeText={(text) => handleInputChange("username", text)}
               autoCapitalize="none"
             />
           </View>
