@@ -1,5 +1,5 @@
 import {Image,StyleSheet,Text,TextInput,TouchableOpacity} from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -28,14 +28,14 @@ const index = () => {
     try {
       const { data } = await axios.post(`${BaseUrl}/auth/login`, formData);
       console.log("Login successful", data);
-  
+
       const currentTime = Date.now();
       await AsyncStorage.setItem("authToken", data.token);
+      await AsyncStorage.setItem("empId", data.empId.toString());
       await AsyncStorage.setItem("tokenTime", currentTime.toString());
-  
       // Redirect to home inside main
       router.replace("/(main)/");
-  
+
       setFormData({
         email: "",
         password: "",
@@ -45,8 +45,8 @@ const index = () => {
       console.error("Login error:", error);
     }
   };
-  
-  
+
+ 
 
   return (
     <SafeAreaView style={Styles.container}>

@@ -2,6 +2,7 @@ import { useRouter, Slot } from "expo-router";
 import { StatusBar } from "react-native";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ContextProvider from "../context/Context";
 
 const RootNavigation = () => {
   const router = useRouter();
@@ -11,9 +12,10 @@ const RootNavigation = () => {
       try {
         const authToken = await AsyncStorage.getItem("authToken");
         const tokenTime = await AsyncStorage.getItem("tokenTime");
-        console.log(authToken,tokenTime)
+        const empId = await AsyncStorage.getItem("empId");
+        console.log(authToken,tokenTime,empId)
 
-        if (authToken && tokenTime) {
+        if (authToken && tokenTime && empId) {
           const currentTime = Date.now();
           const timeElapsed = currentTime - parseInt(tokenTime, 10);
           const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -24,6 +26,7 @@ const RootNavigation = () => {
           } else {
             // Token expired, clear storage and redirect to auth
             await AsyncStorage.removeItem("authToken");
+            await AsyncStorage.removeItem("empId");
             await AsyncStorage.removeItem("tokenTime");
             router.replace("/(auth)");
           }
@@ -41,10 +44,10 @@ const RootNavigation = () => {
   }, []);
 
   return (
-    <>
+    <ContextProvider>
       <StatusBar hidden />
       <Slot />
-    </>
+    </ContextProvider>
   );
 };
 

@@ -1,45 +1,58 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as ImagePicker from "expo-image-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import avatar from "../../assets/images/avatar.jpg";
+import axios from "axios";
+import BaseUrl from "../../common/BaseUrl";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
+import { Context } from "../../context/Context";
 const Profile = () => {
+  const { Logout } = useContext(Context);
   const [profileImage, setProfileImage] = useState(null);
-  const technicianData = {
-    name: "Ahmad Mahmood Rana",
-    title: "Senior HVAC Technician",
-    email: "john.carter@email.com",
-    phone: "+1 (234) 567-890",
-    skills: [
-      "HVAC Installation",
-      "System Repair",
-      "Maintenance",
-      "Troubleshooting",
-    ],
-    completedJobs: 245,
-    rating: 4.9,
-    experience: 5,
+  const [profile, setProfile] = useState();
+
+  const loadProfile = async () => {
+    const empId = await AsyncStorage.getItem("empId");
+    try {
+      const { data } = await axios.get(`${BaseUrl}/auth/profile/${empId}`);
+      setProfile(data.profile);
+    } catch (error) {
+      console.log(error, "Error");
+    }
   };
 
   useEffect(() => {
-    const loadProfileImage = async () => {
-      try {
-        const savedImage = await AsyncStorage.getItem("profileImage");
-        if (savedImage) {
-          setProfileImage(savedImage);
-        }
-      } catch (error) {
-        console.error("Error loading profile image:", error);
-      }
-    };
-
-    loadProfileImage();
+    loadProfile();
   }, []);
 
+  useEffect(() => {
+    if (profile?.URL) {
+      setProfileImage(profile.URL);
+    }
+  }, [profile]);
 
+  useEffect(() => {
+    const loadImage = async () => {
+      const savedImage = await AsyncStorage.getItem("profileImage");
+
+      if (savedImage) {
+        setProfileImage(savedImage);
+      } else if (profile?.URL) {
+        setProfileImage(profile.URL);
+      }
+    };
+    loadImage();
+  }, [profile]);
 
   // Function to pick an image from the gallery
   const handleImagePicker = async () => {
@@ -63,79 +76,96 @@ const Profile = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        {/* Avatar with Image Picker */}
         <TouchableOpacity
+          onPress={() => handleImagePicker()}
           style={styles.avatarContainer}
-          onPress={handleImagePicker}
         >
-          {profileImage ? (
-            <Image source={{ uri: profileImage }} style={styles.avatarImage} />
-          ) : (
-            <Image source={avatar} style={styles.avatarImage} />
-          )}
+          <Image
+            source={profileImage ? { uri: profileImage } : avatar}
+            style={styles.avatarImage}
+          />
         </TouchableOpacity>
-
-        <Text style={styles.name}>{technicianData?.name}</Text>
-        <Text style={styles.title}>{technicianData.title}</Text>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{technicianData.completedJobs}</Text>
-            <Text style={styles.statLabel}>Jobs</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{technicianData.rating}</Text>
-            <Text style={styles.statLabel}>Rating</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{technicianData.experience}+</Text>
-            <Text style={styles.statLabel}>Years</Text>
-          </View>
-        </View>
+        <Text style={styles.name}>{profile?.EMP_NAME}</Text>
+        <Text style={styles.title}>{profile?.DESIGNATION}</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView style={styles.content}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Personal Information</Text>
+
+          <InfoItem
+            icon="card-account-details"
+            label="Employee No"
+            value={profile?.EMP_NO}
+          />
+          <InfoItem icon="badge-account" label="CNIC" value={profile?.NIC} />
+          <InfoItem
+            icon="calendar"
+            label="Date of Birth"
+            value={formatDate(profile?.DOB)}
+          />
+          <InfoItem
+            icon="calendar-check"
+            label="Join Date"
+            value={formatDate(profile?.DOJ)}
+          />
+          <InfoItem
+            icon="water"
+            label="Blood Group"
+            value={profile?.BLOOD_GROUP}
+          />
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contact Information</Text>
-          <View style={styles.infoItem}>
-            <MaterialCommunityIcons
-              name="email"
-              size={20}
-              color={COLOR_SCHEME.accent}
-            />
-            <Text style={styles.infoText}>{technicianData?.email}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <MaterialCommunityIcons
-              name="phone"
-              size={20}
-              color={COLOR_SCHEME.accent}
-            />
-            <Text style={styles.infoText}>{technicianData?.phone}</Text>
-          </View>
+          <InfoItem
+            icon="cellphone"
+            label="Mobile"
+            value={profile?.MOBILE_PHONE}
+          />
+          <InfoItem icon="phone" label="Home" value={profile?.HOME_PHONE} />
+          <InfoItem
+            icon="email"
+            label="Email"
+            value={profile?.E_MAIL_ADDRESS || "N/A"}
+          />
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Skills & Expertise</Text>
-          <View style={styles.skillsContainer}>
-            {technicianData.skills.map((skill, index) => (
-              <View key={index} style={styles.skillTag}>
-                <Text style={styles.skillText}>{skill}</Text>
-              </View>
-            ))}
-          </View>
+          <Text style={styles.sectionTitle}>Department Info</Text>
+          <InfoItem
+            icon="office-building"
+            label="Department ID"
+            value={profile?.DEPT_ID}
+          />
+          <InfoItem icon="map-marker" label="Region" value={profile?.REGION} />
         </View>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity onPress={() => Logout()} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
+
+const InfoItem = ({ icon, label, value }) => (
+  <View style={styles.infoItem}>
+    <MaterialCommunityIcons name={icon} size={20} color={COLOR_SCHEME.accent} />
+    <Text style={styles.infoText}>
+      {label}: {value}
+    </Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -164,11 +194,6 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 50,
   },
-  avatarText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: COLOR_SCHEME.text,
-  },
   name: {
     fontSize: 24,
     fontWeight: "bold",
@@ -179,24 +204,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLOR_SCHEME.grayText,
     marginBottom: 20,
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginTop: 15,
-  },
-  statItem: {
-    alignItems: "center",
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: COLOR_SCHEME.text,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: COLOR_SCHEME.grayText,
   },
   content: {
     flex: 1,
@@ -224,27 +231,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
   },
-  skillsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  skillTag: {
-    backgroundColor: COLOR_SCHEME.accent,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    margin: 5,
-  },
-  skillText: {
-    color: COLOR_SCHEME.text,
-    fontSize: 14,
-  },
   logoutButton: {
     backgroundColor: COLOR_SCHEME.accent,
     borderRadius: 12,
     padding: 15,
     alignItems: "center",
-    marginTop: "auto",
+    marginTop: 10,
+    marginBottom: 20,
   },
   logoutText: {
     color: COLOR_SCHEME.text,
