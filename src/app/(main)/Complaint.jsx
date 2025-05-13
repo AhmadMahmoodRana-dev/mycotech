@@ -5,13 +5,16 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RecentJobCard from "../../components/RecentJobCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import BackHeader from "../../components/BackHeader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BaseUrl from "../../common/BaseUrl";
+import axios from "axios";
 
 const Complaint = () => {
   const navigate = useRouter();
@@ -134,6 +137,20 @@ const Complaint = () => {
       return b.region.localeCompare(a.region);
     });
 
+  const [allJobs, setAllJobs] = useState();
+  const getAllJobs = async () => {
+    const empId = await AsyncStorage.getItem("empId");
+    try {
+      const { data } = await axios.get(`${BaseUrl}/allcomplaint/${empId}`);
+      setAllJobs(data.complaints);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getAllJobs();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <BackHeader name="All Complaints" gap={80} />
@@ -216,11 +233,11 @@ const Complaint = () => {
       {/* Complaints List */}
       <View style={styles.cardContainer}>
         <FlatList
-          data={filteredJobs}
+          data={allJobs}
           renderItem={({ item }) => (
             <RecentJobCard item={item} router={navigate} />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?.COMPLAINT_ID}
           scrollEnabled={true}
         />
       </View>

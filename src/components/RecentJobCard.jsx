@@ -39,16 +39,16 @@ const RecentJobCard = ({ item, router }) => {
           <AntDesign name="file1" color="red" size={14} />
           <Text style={styles.complaintNo}>
             Complaint No :{" "}
-            <Text style={{ fontWeight: "100" }}>{item.complaintNo}</Text>
+            <Text style={{ fontWeight: "100" }}>{item?.COMPLAINT_NO}</Text>
           </Text>
         </View>
         <View
           style={[
             styles.statusBadge,
-            { backgroundColor: getStatusColor(item.status) },
+            { backgroundColor: getStatusColor(item?.status) },
           ]}
         >
-          <Text style={styles.statusText}>{item.status}</Text>
+          <Text style={styles.statusText}>{item?.STATUS}</Text>
         </View>
       </View>
       <View style={styles.jobHeader}>
@@ -56,42 +56,42 @@ const RecentJobCard = ({ item, router }) => {
           <AntDesign name="calendar" color="red" size={14} />
           <Text style={styles.visitDate}>
             Visit Date :{" "}
-            <Text style={{ fontWeight: "100" }}>{item.visitDate}</Text>
+            <Text style={{ fontWeight: "100" }}>{item?.visitDate}</Text>
           </Text>
         </View>
         <View
           style={[
             styles.statusBadge,
-            { backgroundColor: getPriorityColor(item.priority) },
+            { backgroundColor: getPriorityColor(item?.priority) },
           ]}
         >
-          <Text style={{ color: "white", fontSize: 10 }}>{item.priority}</Text>
+          <Text style={{ color: "white", fontSize: 10 }}>{item?.priority}</Text>
         </View>
       </View>
       <View style={styles.CardMain}>
         <Text style={styles.visitDate}>
           Day Since Complaint Filed :{" "}
-          <Text style={{ fontWeight: "100" }}>{item.complainedFiledDay}</Text>
+          <Text style={{ fontWeight: "100" }}>{item?.complainedFiledDay}</Text>
         </Text>
       </View>
       <View style={styles.CardMain}>
         <Text style={styles.visitDate}>
-          {item.product} |{" "}
-          <Text style={{ fontWeight: "100" }}>{item.productCode}</Text>
+          {item?.product} |{" "}
+          <Text style={{ fontWeight: "100" }}>{item?.productCode}</Text>
         </Text>
       </View>
-      {item.status === "Completed" ? (
+      {item?.status === "Completed" ? (
         <View style={styles.jobHeader}>
-          <Text style={{ fontWeight: 400, color: "white" }}>{item.region}</Text>
+          <Text style={{ fontWeight: 400, color: "white" }}>{item?.region}</Text>
         </View>
       ) : (
         <View style={styles.jobHeader}>
-          <Text style={{ fontWeight: 400, color: "white" }}>{item.region}</Text>
+          <Text style={{ fontWeight: 400, color: "white" }}>{item?.region}</Text>
           <TouchableOpacity
             onPress={() => console.log("i am arrived")}
             style={[
               styles.statusBadge,
-              { backgroundColor: getStatusColor(item.status) },
+              { backgroundColor: getStatusColor(item?.status) },
             ]}
           >
             <Text style={styles.statusText}>Arrived</Text>
