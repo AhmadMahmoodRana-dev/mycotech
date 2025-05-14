@@ -15,10 +15,25 @@ const ContextProvider = (props) => {
     res.json({ message: "Logged out successfully" });
   };
 
+
+     const getDaysSinceComplaint = (filedDate) => {
+      const complaintDate = new Date(filedDate);
+      const currentDate = new Date();
+    
+      // Calculate time difference in milliseconds
+      const timeDiff = currentDate - complaintDate;
+    
+      // Convert milliseconds to days
+      const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    
+      return daysDiff;
+    }
+
   // ######################################################################################################################################
 
   const contextValue = {
     Logout,
+    getDaysSinceComplaint
   };
 
   return (

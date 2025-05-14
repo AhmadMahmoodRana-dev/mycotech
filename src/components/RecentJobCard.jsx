@@ -1,7 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import COLOR_SCHEME from "../colors/MainStyle";
+import { Context } from "../context/Context";
 
 const RecentJobCard = ({ item, router }) => {
   const getStatusColor = (status) => {
@@ -28,6 +29,7 @@ const RecentJobCard = ({ item, router }) => {
         return COLOR_SCHEME.grayText;
     }
   };
+  const {getDaysSinceComplaint} = useContext(Context)
 
   return (
     <TouchableOpacity
@@ -65,19 +67,19 @@ const RecentJobCard = ({ item, router }) => {
             { backgroundColor: getPriorityColor(item?.priority) },
           ]}
         >
-          <Text style={{ color: "white", fontSize: 10 }}>{item?.priority}</Text>
+          <Text style={{ color: "white", fontSize: 10 }}>High</Text>
         </View>
       </View>
       <View style={styles.CardMain}>
         <Text style={styles.visitDate}>
           Day Since Complaint Filed :{" "}
-          <Text style={{ fontWeight: "100" }}>{item?.complainedFiledDay}</Text>
+          <Text style={{ fontWeight: "100" }}>{getDaysSinceComplaint(item?.COMPLAINT_DATE)}</Text>
         </Text>
       </View>
       <View style={styles.CardMain}>
         <Text style={styles.visitDate}>
-          {item?.product} |{" "}
-          <Text style={{ fontWeight: "100" }}>{item?.productCode}</Text>
+          {item?.PRODUCT_NAME} |{" "}
+          <Text style={{ fontWeight: "100" }}>{item?.PRODUCT_MODEL_NUMBER}</Text>
         </Text>
       </View>
       {item?.status === "Completed" ? (
@@ -86,7 +88,7 @@ const RecentJobCard = ({ item, router }) => {
         </View>
       ) : (
         <View style={styles.jobHeader}>
-          <Text style={{ fontWeight: 400, color: "white" }}>{item?.region}</Text>
+          <Text style={{ fontWeight: 400, color: "white" }}>{item?.REGION_DESCRIPTION}</Text>
           <TouchableOpacity
             onPress={() => console.log("i am arrived")}
             style={[
@@ -128,12 +130,12 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingHorizontal: 6,
     borderRadius: 8,
   },
   statusText: {
     color: COLOR_SCHEME.text,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "500",
   },
   CardMain: {

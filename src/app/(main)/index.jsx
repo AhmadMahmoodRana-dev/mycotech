@@ -1,46 +1,47 @@
 import { StatusBar } from "expo-status-bar";
-import {StyleSheet,Text,View,TouchableOpacity,FlatList,Dimensions,ScrollView} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons, Feather, Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { useRouter } from "expo-router";
 import RecentJobCard from "../../components/RecentJobCard";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import BaseUrl from "../../common/BaseUrl";
 
 const { width } = Dimensions.get("window");
 
 const quickActions = [
-  { id: "1", icon: "work", title: "Complaints", route: "/Complaint"},
+  { id: "1", icon: "work", title: "Complaints", route: "/Complaint" },
   { id: "2", icon: "summarize", title: "Summary", route: "" },
-  { id: "3", icon: "inventory", title: "Inventory",route:"/InventoryPage"},
-  { id: "4", icon: "open-with", title: "OH Stock",route:"/OHStockPage"},
-];
-
-const recentJobs = [
-  {
-    id: "1",
-    complaintNo: "2233445566",
-    visitDate: "12-06-2025",
-    complainedFiledDay: "593",
-    product: "LED TV",
-    productCode: "CX-40U560",
-    status: "Completed",
-    region: "North Region",
-    priority: "High",
-  },
-  {
-    id: "2",
-    complaintNo: "2233445566",
-    visitDate: "12-06-2025",
-    complainedFiledDay: "593",
-    product: "LED TV",
-    productCode: "CX-40U560",
-    status: "In Progress",
-    region: "South Region",
-    priority: "Low",
-  },
+  { id: "3", icon: "inventory", title: "Inventory", route: "/InventoryPage" },
+  { id: "4", icon: "open-with", title: "OH Stock", route: "/OHStockPage" },
 ];
 
 export default function Index() {
+  const [allJobs, setAllJobs] = useState();
+  const getAllJobs = async () => {
+    const empId = await AsyncStorage.getItem("empId");
+    try {
+      const { data } = await axios.get(`${BaseUrl}/allcomplaint/${empId}`);
+      setAllJobs(data.complaints);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getAllJobs();
+  }, []);
+
   const navigate = useRouter();
   const renderQuickAction = ({ item }) => (
     <TouchableOpacity
@@ -71,7 +72,10 @@ export default function Index() {
               />
               <View style={styles.badge} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.profileButton} onPress={() => navigate.push("/Profile")}>
+            <TouchableOpacity
+              style={styles.profileButton}
+              onPress={() => navigate.push("/Profile")}
+            >
               <Ionicons name="person" size={24} color={COLOR_SCHEME.text} />
             </TouchableOpacity>
           </View>
@@ -91,9 +95,11 @@ export default function Index() {
         {/* Recent Jobs */}
         <Text style={styles.sectionTitle}>Recent Jobs</Text>
         <FlatList
-          data={recentJobs}
-          renderItem={({ item }) => <RecentJobCard item={item} router={navigate} />}
-          keyExtractor={(item) => item.id}
+          data={(allJobs || []).slice(0, 2)}
+          renderItem={({ item }) => (
+            <RecentJobCard item={item} router={navigate} />
+          )}
+          keyExtractor={(item) => item.COMPLAINT_ID}
           scrollEnabled={false}
         />
       </ScrollView>
@@ -113,7 +119,7 @@ export default function Index() {
             color={COLOR_SCHEME.grayText}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigate.push("/Setting")} >
+        <TouchableOpacity onPress={() => navigate.push("/Setting")}>
           <Feather name="settings" size={28} color={COLOR_SCHEME.grayText} />
         </TouchableOpacity>
       </View>

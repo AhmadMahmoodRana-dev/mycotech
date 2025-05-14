@@ -1,12 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from "react-native";
+import {View,Text,StyleSheet,TouchableOpacity,Image,ScrollView} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -95,7 +88,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
         <Text style={styles.name}>{profile?.EMP_NAME}</Text>
-        <Text style={styles.title}>{profile?.DESIGNATION}</Text>
+        <Text style={styles.title}>{profile?.DESIGNATION_NAME}</Text>
       </View>
 
       <ScrollView style={styles.content}>
@@ -145,9 +138,9 @@ const Profile = () => {
           <InfoItem
             icon="office-building"
             label="Department ID"
-            value={profile?.DEPT_ID}
+            value={profile?.DEPARTMENT_NAME}
           />
-          <InfoItem icon="map-marker" label="Region" value={profile?.REGION} />
+          <InfoItem icon="map-marker" label="Region" value={profile?.REGION_NAME} />
         </View>
 
         <TouchableOpacity onPress={() => Logout()} style={styles.logoutButton}>
