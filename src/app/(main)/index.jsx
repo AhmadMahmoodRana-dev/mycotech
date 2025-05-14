@@ -1,13 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import {StyleSheet,Text,View,TouchableOpacity,FlatList,Dimensions,ScrollView} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons, Feather, Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../../colors/MainStyle";

@@ -1,8 +1,7 @@
 import React from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput, StyleSheet, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import COLOR_SCHEME from "../colors/MainStyle";
-import { Text } from "react-native";
 
 const CustomInput = ({
   icon,
@@ -11,41 +10,33 @@ const CustomInput = ({
   onChangeText,
   editable = true,
   secureTextEntry = false,
-  iconFunction
+  iconFunction,
 }) => {
   return (
     <View style={styles.inputGroup}>
-      <Ionicons onPress={() => iconFunction()}
+      <Ionicons
+        onPress={() => iconFunction?.()}
         name={icon}
         size={18}
         color={COLOR_SCHEME.grayText}
         style={styles.inputIcon}
       />
-      {placeholder === "Phone No" ? (
-        <Text style={{ color: "white", fontSize: 16 }}>+92</Text>
-      ) : null}
-
-      {placeholder === "Address" ? (
-        <TextInput
-            style={[styles.input, styles.addressInput]}
-            placeholder={placeholder}
-          placeholderTextColor={COLOR_SCHEME.grayText}
-          value={value}
-          onChangeText={onChangeText} // Important for handling input
-          editable={editable}
-          secureTextEntry={secureTextEntry}
-        />
-      ) : (
-        <TextInput
-          style={styles.input}
-          placeholder={placeholder}
-          placeholderTextColor={COLOR_SCHEME.grayText}
-          value={value}
-          onChangeText={onChangeText} // Important for handling input
-          editable={editable}
-          secureTextEntry={secureTextEntry}
-        />
-      )}
+      <TextInput
+        style={[
+          styles.input,
+          placeholder === "Address" && styles.addressInput,
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor={COLOR_SCHEME.grayText}
+        value={value}
+        onChangeText={onChangeText}
+        editable={editable}
+        secureTextEntry={secureTextEntry}
+        multiline={placeholder === "Address"}
+        textAlignVertical={
+          placeholder === "Address" ? "top" : "center"
+        } // Ensures better alignment
+      />
     </View>
   );
 };
@@ -53,24 +44,25 @@ const CustomInput = ({
 const styles = StyleSheet.create({
   inputGroup: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 15,
     backgroundColor: COLOR_SCHEME.background,
     borderRadius: 8,
     paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   inputIcon: {
     marginRight: 10,
+    marginTop: 12,
   },
   input: {
     flex: 1,
     color: COLOR_SCHEME.text,
     fontSize: 16,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   addressInput: {
     height: 80,
-    textAlignVertical: "center",
   },
 });
 

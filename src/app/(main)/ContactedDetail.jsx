@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import {View,Text,TouchableOpacity,StyleSheet,Platform,Linking,Alert} from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  Linking,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -15,16 +24,10 @@ const ContactedDetail = () => {
   const router = useRouter();
 
   const initialData = useRef({
-    phone: "3008878690",
-    landline: "02135678900",
-    address: "Test Address, City",
     phoneStatus: "Contact Status",
     visitDate: new Date(),
   });
 
-  const [phone, setPhone] = useState(initialData.current.phone);
-  const [landline, setLandline] = useState(initialData.current.landline);
-  const [address, setAddress] = useState(initialData.current.address);
   const [phoneStatus, setPhoneStatus] = useState(
     initialData.current.phoneStatus
   );
@@ -33,24 +36,20 @@ const ContactedDetail = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
   const [isUpdated, setIsUpdated] = useState(false);
 
   const statusOptions = ["Contact Status", "not reachable", "wrong number"];
+  const isCompleted = params.STATUS === "Completed";
 
   useEffect(() => {
     const changed =
-      phone !== initialData.current.phone ||
-      landline !== initialData.current.landline ||
-      address !== initialData.current.address ||
       phoneStatus !== initialData.current.phoneStatus ||
       visitDate.toString() !== initialData.current.visitDate.toString();
-
     setIsUpdated(changed);
-  }, [phone, landline, address, phoneStatus, visitDate]);
+  }, [phoneStatus, visitDate]);
 
   const handleCall = () => {
-    const phoneNumber = `tel:+92${phone}`;
+    const phoneNumber = `tel:${params.MOBILE_NO}`;
     Linking.openURL(phoneNumber).catch(() => {
       Alert.alert("Error", "Could not make a call");
     });
@@ -86,7 +85,6 @@ const ContactedDetail = () => {
         return COLOR_SCHEME.grayText;
     }
   };
-  const isCompleted = params.status === "Completed";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -105,72 +103,59 @@ const ContactedDetail = () => {
       {/* Complaint Details */}
       <View style={styles.card}>
         <View style={styles.complaintHeader}>
-          <Text style={styles.complaintNumber}>{params.complaintNo}</Text>
-          <Text style={styles.visitDate}>{params.visitDate}</Text>
+          <Text style={styles.complaintNumber}>{params.COMPLAINT_NO}</Text>
+          <Text style={styles.visitDate}>{params.visitDate}12-02-2025</Text>
         </View>
         <Text style={styles.productName}>
-          {params.product} | {params.productCode}
+          {params.PRODUCT_NAME} | {params.PRODUCT_MODEL_NUMBER}
         </Text>
       </View>
 
-      {/* Complaint Status */}
-      {params.status == "Completed" ? (
-        <View
-          style={[
-            styles.arrivalButton,
-            { backgroundColor: getStatusColor(params.status) },
-          ]}
-        >
-          <Ionicons
-            name="navigate"
-            size={20}
-            color="white"
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.buttonText}>Complaint is {params.status}</Text>
-        </View>
-      ) : (
-        <TouchableOpacity
-          onPress={() => router.push("ComplaintActivityForm")}
-          style={[
-            styles.arrivalButton,
-            { backgroundColor: getStatusColor(params.status) },
-          ]}
-        >
-          <Ionicons
-            name="navigate"
-            size={20}
-            color="white"
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.buttonText}>Complaint is {params.status}</Text>
-        </TouchableOpacity>
-      )}
+      {/* Complaint Status Button */}
+      <TouchableOpacity
+        onPress={
+          isCompleted ? undefined : () => router.push("ComplaintActivityForm")
+        }
+        style={[
+          styles.arrivalButton,
+          { backgroundColor: getStatusColor(params.STATUS) },
+        ]}
+        disabled={isCompleted}
+      >
+        <Ionicons
+          name="navigate"
+          size={20}
+          color="white"
+          style={styles.buttonIcon}
+        />
+        <Text style={styles.buttonText}>Complaint is {params.STATUS}</Text>
+      </TouchableOpacity>
 
-      {/* Editable Contact Form */}
-      <View style={styles.formCard}>
+      {/* Contact Information Form */}
+      <ScrollView style={styles.formCard}>
         <CustomInput
           icon="person"
           placeholder="Name"
-          value="Ahmad Mahmood Rana"
+          value={params.CUSTOMER_MANUAL_NAME}
           editable={false}
         />
 
         <CustomInput
-          iconFunction={!isCompleted ? handleCall : undefined}
+          iconFunction={handleCall}
           icon="call"
           placeholder="Phone No"
-          value={phone}
-          editable={!isCompleted}
+          value={params.MOBILE_NO}
+          editable={false}
         />
 
         <CustomInput
           icon="phone-portrait"
           placeholder="Landline No"
-          value={landline}
-          editable={!isCompleted}
+          value={params.MOBILE_NO}
+          editable={false}
         />
 
+        {/* Editable Contact Status */}
         <TouchableOpacity
           style={styles.inputGroup}
           onPress={() => !isCompleted && setShowStatusDropdown(true)}
@@ -195,10 +180,11 @@ const ContactedDetail = () => {
         <CustomInput
           icon="location"
           placeholder="Address"
-          value={address}
-          editable={!isCompleted}
+          value={params.ADDRESS}
+          editable={false}
         />
 
+        {/* Editable Visit Date */}
         <TouchableOpacity
           style={styles.inputGroup}
           onPress={() => !isCompleted && setShowDatePicker(true)}
@@ -215,25 +201,12 @@ const ContactedDetail = () => {
           </Text>
         </TouchableOpacity>
 
+        {/* Update Button */}
         {isUpdated && !isCompleted && (
           <TouchableOpacity
-            style={{
-              backgroundColor: COLOR_SCHEME.accent,
-              padding: 12,
-              flexDirection: "row",
-              borderRadius: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 10,
-            }}
+            style={styles.updateButton}
             onPress={() => {
-              initialData.current = {
-                phone,
-                landline,
-                address,
-                phoneStatus,
-                visitDate,
-              };
+              initialData.current = { phoneStatus, visitDate };
               setIsUpdated(false);
             }}
           >
@@ -241,7 +214,7 @@ const ContactedDetail = () => {
             <Text style={{ color: "white" }}>Update</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </ScrollView>
 
       {/* Date and Time Pickers */}
       {showDatePicker && (
@@ -253,7 +226,6 @@ const ContactedDetail = () => {
           minimumDate={new Date()}
         />
       )}
-
       {showTimePicker && (
         <DateTimePicker
           value={visitDate}
@@ -263,7 +235,7 @@ const ContactedDetail = () => {
         />
       )}
 
-      {/* Status Dropdown Modal */}
+      {/* Status Dropdown */}
       <Dropdown
         showStatusDropdown={showStatusDropdown}
         setPhoneStatus={setPhoneStatus}
@@ -324,6 +296,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "700",
     fontSize: 16,
+    textTransform:"capitalize"
   },
   buttonIcon: {
     marginRight: 10,
@@ -357,6 +330,17 @@ const styles = StyleSheet.create({
     flex: 1,
     color: COLOR_SCHEME.text,
     fontSize: 16,
+  },
+  updateButton: {
+    backgroundColor: COLOR_SCHEME.accent,
+    padding: 12,
+    flexDirection: "row",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 10,
+    marginBottom:50
   },
 });
 
