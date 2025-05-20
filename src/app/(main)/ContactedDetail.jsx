@@ -1,14 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-  Linking,
-  Alert,
-  ScrollView,
-} from "react-native";
+import {View,Text,TouchableOpacity,StyleSheet,Platform,Linking,Alert,ScrollView} from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -114,7 +105,7 @@ const ContactedDetail = () => {
       {/* Complaint Status Button */}
       <TouchableOpacity
         onPress={
-          isCompleted ? undefined : () => router.push("ComplaintActivityForm")
+          isCompleted ? undefined : () => router.push({ pathname: "ComplaintActivityForm", params: params })
         }
         style={[
           styles.arrivalButton,

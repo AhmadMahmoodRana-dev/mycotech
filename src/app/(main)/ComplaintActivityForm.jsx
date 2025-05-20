@@ -1,27 +1,36 @@
 import React, { useState, useRef } from "react";
-import {View,Text,TouchableOpacity,ScrollView,Alert,Image} from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../../components/CustomInput";
 import { useCameraPermissions } from "expo-camera";
 import QrcodeScannerModel from "../../components/Models/QrcodeScannerModel";
 import BackHeader from "../../components/BackHeader";
 import { styles } from "../../styles/ComplaintActivityForm";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import CustomDropdown from "../../components/CustomDropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 const ComplaintActivityForm = () => {
+  const params = useLocalSearchParams();
+  console.log("COMPLAINT PARAMS", params);
   const navigate = useRouter();
   const [formData, setFormData] = useState({
-    name: "Ahmad Mahmood Khan",
+    name: params.CUSTOMER_MANUAL_NAME,
     complaintNo: "2232100026",
     dueDate: "0000-00-00",
     appliance: "Refrigerator Gree GR-E8768G-C1",
     customerName: "ABDUL REHMAN",
-    phone: "3015988221",
-    address: "45-B, FEROZPUR ROAD LAHORE",
+    phone: params.MOBILE_NO,
+    address: params.ADDRESS,
     problem: "Gas Leakage",
     visitDate: "2025-04-03",
     model: "",
@@ -152,10 +161,12 @@ const ComplaintActivityForm = () => {
       {/* Complaint Details Card */}
       <View style={styles.card}>
         <View style={styles.complaintHeader}>
-          <Text style={styles.complaintNumber}>{formData.complaintNo}</Text>
+          <Text style={styles.complaintNumber}>{params.COMPLAINT_NO}</Text>
           <Text style={styles.visitDate}>{formData.visitDate}</Text>
         </View>
-        <Text style={styles.productName}>{formData.appliance}</Text>
+        <Text style={styles.productName}>
+          {params.PRODUCT_NAME} | {params.PRODUCT_MODEL_NUMBER}
+        </Text>
       </View>
 
       <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
