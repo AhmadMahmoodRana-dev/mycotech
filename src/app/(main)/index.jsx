@@ -21,6 +21,8 @@ const quickActions = [
 
 export default function Index() {
   const [allJobs, setAllJobs] = useState();
+  const empID = AsyncStorage.getItem("empId")
+  console.log(empID)
   const getAllJobs = async () => {
     const empId = await AsyncStorage.getItem("empId");
     try {

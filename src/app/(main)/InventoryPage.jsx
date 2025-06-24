@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  Animated,
-  Dimensions,
-} from "react-native";
+import {View,Text,StyleSheet,FlatList,TextInput,TouchableOpacity,ActivityIndicator,Animated,Dimensions} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import BackHeader from "../../components/BackHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -62,17 +52,12 @@ const InventoryPage = () => {
   // Render hardware items
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.description}>{item?.ITEM_DESC}</Text>
-
       <View style={styles.priceContainer}>
         <Text style={styles.priceLabel}>Service Price:</Text>
         <Text style={styles.priceValue}>${item?.ITEM_PRICE?.toFixed(2)}</Text>
       </View>
-
-      <View style={styles.footer}>
-        <Text style={styles.typeBadge}>Type: {item?.ITEM_TYPE}</Text>
-        <Text style={styles.partNo}>{item?.PART_NO || "No Part Number"}</Text>
-      </View>
+      <Text style={styles.description}>{item?.ITEM_DESC}</Text>
+      
     </View>
   );
 
@@ -378,17 +363,15 @@ const styles = StyleSheet.create({
     borderLeftColor: "#4A90E2",
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     color: COLOR_SCHEME.grayText,
-    marginBottom: 12,
     lineHeight: 22,
   },
   priceContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 8,
-    borderTopWidth: 1,
     borderTopColor: "#EEE",
     borderBottomWidth: 1,
     borderBottomColor: "#EEE",
@@ -396,31 +379,12 @@ const styles = StyleSheet.create({
   },
   priceLabel: {
     fontSize: 14,
-    color: "#666",
+    color: "#fff",
   },
   priceValue: {
     fontSize: 16,
     fontWeight: "700",
     color: COLOR_SCHEME.text,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  typeBadge: {
-    backgroundColor: COLOR_SCHEME?.background,
-    color: "#4A90E2",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  partNo: {
-    fontSize: 12,
-    color: "#999",
-    fontStyle: "italic",
   },
 });
 
