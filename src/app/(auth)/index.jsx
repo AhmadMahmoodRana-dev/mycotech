@@ -1,5 +1,5 @@
 import {Image,StyleSheet,Text,TextInput,TouchableOpacity} from "react-native";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import BaseUrl from "../../common/BaseUrl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Context } from "../../context/Context";
 
 const index = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const index = () => {
     password: "",
     passwordVisible: false,
   });
+  const {getStoreDetails} = useContext(Context)
 
   // Function to handle input change
   const handleInputChange = (name, value) => {
@@ -36,18 +38,17 @@ const index = () => {
       // Redirect to home inside main
       router.replace("/(main)/");
 
+      getStoreDetails(data.empId)
       setFormData({
         email: "",
         password: "",
         passwordVisible: false,
       });
+      
     } catch (error) {
       console.error("Login error:", error);
     }
   };
-
- 
-
   return (
     <SafeAreaView style={Styles.container}>
       <View style={Styles.logoContainer}>
